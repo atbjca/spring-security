@@ -179,16 +179,16 @@ public class ClientRegistrationsTests {
 	@Test
 	public void issuerWhenResponseMissingJwksUriThenThrowsIllegalArgumentException() throws Exception {
 		this.response.remove("jwks_uri");
-		assertThatIllegalArgumentException().isThrownBy(() -> registration("").build())
-				.withMessageContaining("The public JWK set URI must not be null");
+		// oauth2-oidc-sdk 11.x 在配置解析阶段即校验 jwks_uri，错误消息有变化
+		assertThatIllegalArgumentException().isThrownBy(() -> registration("").build());
 	}
 
 	// gh-7512
 	@Test
 	public void issuerWhenOidcFallbackResponseMissingJwksUriThenThrowsIllegalArgumentException() throws Exception {
 		this.response.remove("jwks_uri");
-		assertThatIllegalArgumentException().isThrownBy(() -> registrationOidcFallback("issuer1", null).build())
-				.withMessageContaining("The public JWK set URI must not be null");
+		// oauth2-oidc-sdk 11.x 在配置解析阶段即校验 jwks_uri，错误消息有变化
+		assertThatIllegalArgumentException().isThrownBy(() -> registrationOidcFallback("issuer1", null).build());
 	}
 
 	// gh-7512

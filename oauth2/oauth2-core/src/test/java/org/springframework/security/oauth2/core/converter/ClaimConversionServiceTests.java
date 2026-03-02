@@ -19,6 +19,7 @@ package org.springframework.security.oauth2.core.converter;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -26,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
@@ -160,12 +159,13 @@ public class ClaimConversionServiceTests {
 
 	@Test
 	public void convertListStringWhenJsonArrayThenConverts() {
-		JSONArray jsonArray = new JSONArray();
+		// nimbus-jose-jwt 10.x 移除了 shaded json-smart，使用 ArrayList 模拟原 JSONArray 行为
+		ArrayList<String> jsonArray = new ArrayList<>();
 		jsonArray.add("1");
 		jsonArray.add("2");
 		jsonArray.add("3");
 		jsonArray.add(null);
-		assertThat(this.conversionService.convert(jsonArray, List.class)).isNotInstanceOf(JSONArray.class)
+		assertThat(this.conversionService.convert(jsonArray, List.class))
 				.isEqualTo(Lists.list("1", "2", "3"));
 	}
 
@@ -238,7 +238,8 @@ public class ClaimConversionServiceTests {
 
 	@Test
 	public void convertMapStringObjectWhenJsonObjectThenConverts() {
-		JSONObject jsonObject = new JSONObject();
+		// nimbus-jose-jwt 10.x 移除了 shaded json-smart，使用 HashMap 模拟原 JSONObject 行为
+		HashMap<String, Object> jsonObject = new HashMap<>();
 		jsonObject.put("1", "value1");
 		jsonObject.put("2", "value2");
 
@@ -248,7 +249,7 @@ public class ClaimConversionServiceTests {
 				put("2", "value2");
 			}
 		};
-		assertThat(this.conversionService.convert(jsonObject, Map.class)).isNotInstanceOf(JSONObject.class)
+		assertThat(this.conversionService.convert(jsonObject, Map.class))
 				.isEqualTo(mapStringObject);
 	}
 

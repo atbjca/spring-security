@@ -120,12 +120,7 @@ updateDependenciesSettings {
 					selection.reject("jython updates break integration tests");
 				}
 			}
-			components.withModule("com.nimbusds:nimbus-jose-jwt") { selection ->
-				ModuleComponentIdentifier candidate = selection.getCandidate();
-				if (!candidate.getVersion().equals(selection.getCurrentVersion())) {
-					selection.reject("nimbus-jose-jwt gets updated when oauth2-oidc-sdk is updated to ensure consistency");
-				}
-			}
+			// nimbus-jose-jwt 版本锁定已移除，已升级至 10.8 修复 CVE-2023-52428、CVE-2025-53864、CVE-2025-8916
 			components.all { selection ->
 				ModuleComponentIdentifier candidate = selection.getCandidate();
 				// Do not compare version due to multiple versions existing

@@ -18,13 +18,12 @@ package org.springframework.security.oauth2.core.converter;
 
 import java.net.URL;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,10 +121,11 @@ public class ClaimTypeConverterTests {
 		mapIntegerObject.put(1, "value1");
 		Map<String, Object> mapStringObject = new HashMap<>();
 		mapStringObject.put("1", "value1");
-		JSONArray jsonArray = new JSONArray();
+		// nimbus-jose-jwt 10.x 移除了 shaded json-smart，使用标准集合替代
+		ArrayList<String> jsonArray = new ArrayList<>();
 		jsonArray.add("1");
 		List<String> jsonArrayListString = Lists.list("1");
-		JSONObject jsonObject = new JSONObject();
+		HashMap<String, Object> jsonObject = new HashMap<>();
 		jsonObject.put("1", "value1");
 		Map<String, Object> jsonObjectMap = Maps.newHashMap("1", "value1");
 		Map<String, Object> claims = new HashMap<>();

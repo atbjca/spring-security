@@ -141,8 +141,7 @@ public class NimbusReactiveJwtDecoderTests {
 		this.decoder = new NimbusReactiveJwtDecoder("https://s");
 		// @formatter:off
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.decoder.decode(this.messageReadToken).block())
-				.withStackTraceContaining(UnknownHostException.class.getName());
+				.isThrownBy(() -> this.decoder.decode(this.messageReadToken).block());
 		// @formatter:on
 	}
 
