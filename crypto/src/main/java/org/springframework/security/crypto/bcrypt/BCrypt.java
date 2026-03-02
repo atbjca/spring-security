@@ -611,6 +611,16 @@ public class BCrypt {
 		int rounds, off;
 		StringBuilder rs = new StringBuilder();
 
+		// CVE-2025-22228 修复：BCrypt 算法内部仅处理最多 72 字节的密码，超出部分会被静默截断，
+		// 导致不同密码可能产生相同的哈希值，存在认证绕过风险（CVSS 7.4 HIGH）。
+		// CVE-2025-22234 修复（回归修复）：长度限制仅针对新密码的编码操作（!for_check），
+		// 对已有密码的验证操作（for_check=true）不做限制，以保持向后兼容性，
+		// 同时避免破坏 DaoAuthenticationProvider 的时序攻击防护机制。
+		// 采用合并修复策略：同时 backport 两个 CVE 修复，避免引入回归。
+		if (!for_check && passwordb.length > 72) {
+			throw new IllegalArgumentException("password cannot be more than 72 bytes");
+		}
+
 		if (salt == null) {
 			throw new IllegalArgumentException("salt cannot be null");
 		}
