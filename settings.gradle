@@ -1,6 +1,31 @@
 pluginManagement {
 	repositories {
+		mavenLocal()
+		mavenCentral()
 		gradlePluginPortal()
+		// Nexus 私服仓库（插件下载源）
+		maven {
+			name = 'nexus'
+			url = nexusPublicUrl
+			allowInsecureProtocol = true
+			credentials {
+				username = nexusUsername
+				password = nexusPassword
+			}
+		}
+		if (version.endsWith('-SNAPSHOT')) {
+			// Nexus 快照仓库（SNAPSHOT 版本插件下载源）
+			maven {
+				name = 'nexus-snapshots'
+				url = nexusSnapshotUrl
+				allowInsecureProtocol = true
+				credentials {
+					username = nexusUsername
+					password = nexusPassword
+				}
+			}
+		}
+		maven { url "https://repo.spring.io/release" }
 	}
 }
 
@@ -11,12 +36,6 @@ plugins {
 
 if (System.getenv("DEVELOCITY_ACCESS_KEY")) {
 	apply plugin: "io.spring.ge.conventions"
-}
-
-dependencyResolutionManagement {
-	repositories {
-		mavenCentral()
-	}
 }
 
 rootProject.name = 'spring-security'
