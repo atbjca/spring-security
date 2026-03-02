@@ -1,6 +1,6 @@
 # Spring Security 5.7.x CVE 漏洞修复 – APM Implementation Plan
 **Memory Strategy:** Dynamic-MD
-**Last Modification:** Plan creation by the Setup Agent.
+**Last Modification:** 所有 Phase（1-5）完成。CVE-2024-38827 不受影响，CVE-2025-22228+CVE-2025-22234 合并修复已提交，CVE-2025-22233 不适用（Spring Framework 漏洞）。
 **Project Overview:** 针对 Spring Security 5.7.14（分支 5.7.x）的 4 个已知 CVE（CVE-2024-38827、CVE-2025-22228、CVE-2025-22233、CVE-2025-22234）进行研究、影响评估、代码修复（backport 官方方案）、测试编写和文档记录。从 5.7.x 创建 5.7.x-bjca-patch 分支进行修复，每个 CVE 修复后单独 commit。所有修改处添加完备中文注释，文档使用中文。
 
 ## Phase 1: 项目初始化
