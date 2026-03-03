@@ -222,4 +222,82 @@ public class BCryptPasswordEncoderTests {
 		assertThat(encoder.matches("wrong", "$2a$00$9N8N35BVs5TLqGL3pspAte5OWWA2a2aZIs.EGp7At7txYakFERMue")).isFalse();
 	}
 
+	// === CVE-2025-22228 修复验证测试 ===
+
+	/**
+	 * 测试 72 字节密码可以正常编码和验证
+	 * 72 字节是 BCrypt 算法的最大有效密码长度
+	 */
+	@Test
+	public void encodeWhenPasswordIs72BytesThenSuccess() {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		// 72 个 ASCII 字符 = 72 字节
+		String password72Bytes = repeatChar('A', 72);
+		String encoded = encoder.encode(password72Bytes);
+		assertThat(encoder.matches(password72Bytes, encoded)).isTrue();
+	}
+
+	/**
+	 * 测试超过 72 字节的密码在编码时被拒绝（CVE-2025-22228 修复）
+	 */
+	@Test
+	public void encodeWhenPasswordExceeds72BytesThenThrowsException() {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		// 73 个 ASCII 字符 = 73 字节
+		String password73Bytes = repeatChar('A', 73);
+		assertThatIllegalArgumentException().isThrownBy(() -> encoder.encode(password73Bytes))
+			.withMessageContaining("72 bytes");
+	}
+
+	/**
+	 * 测试超过 72 字节的密码在验证时不抛出异常（CVE-2025-22234 回归修复）
+	 * matches() 路径必须正常执行，以保持 DaoAuthenticationProvider 的时序攻击防护
+	 */
+	@Test
+	public void matchesWhenPasswordExceeds72BytesThenDoesNotThrowException() {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		// 先编码一个短密码
+		String shortPassword = "password";
+		String encoded = encoder.encode(shortPassword);
+		// 用超长密码去 matches，不应抛出异常
+		String longPassword = repeatChar('A', 100);
+		assertThat(encoder.matches(longPassword, encoded)).isFalse();
+	}
+
+	/**
+	 * 测试多字节字符密码的字节长度边界
+	 * 中文字符在 UTF-8 编码下占 3 字节，24 个中文字符 = 72 字节
+	 */
+	@Test
+	public void encodeWhenMultiBytePasswordExceeds72BytesThenThrowsException() {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		// 25 个中文字符 = 75 字节（UTF-8），超过 72 字节限制
+		String multiBytePassword = "密码测试用例一二三四五六七八九零壹贰叁肆伍陆柒捌玖";
+		assertThatIllegalArgumentException().isThrownBy(() -> encoder.encode(multiBytePassword));
+	}
+
+	/**
+	 * 测试前 72 字节相同的超长密码在 matches 中仍然可以匹配
+	 * 这验证了 matches 路径的 for_check 行为
+	 */
+	@Test
+	public void matchesWhenLongPasswordSharesFirst72BytesThenMatches() {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		// 编码一个刚好 72 字节的密码
+		String password72 = repeatChar('A', 72);
+		String encoded = encoder.encode(password72);
+		// 超长密码（前 72 字节与 password72 相同），matches 不抛异常且返回 true
+		String longPassword = repeatChar('A', 100);
+		assertThat(encoder.matches(longPassword, encoded)).isTrue();
+	}
+
+	/**
+	 * 辅助方法：生成重复字符的字符串（兼容 Java 8，替代 String.repeat()）
+	 */
+	private static String repeatChar(char c, int count) {
+		char[] chars = new char[count];
+		java.util.Arrays.fill(chars, c);
+		return new String(chars);
+	}
+
 }

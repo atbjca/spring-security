@@ -648,6 +648,16 @@ public class BCrypt {
 		real_salt = salt.substring(off + 3, off + 25);
 		saltb = decode_base64(real_salt, BCRYPT_SALT_LEN);
 
+		// CVE-2025-22228 修复：限制 BCrypt 密码长度不超过 72 字节
+		// BCrypt 算法内部（Blowfish key schedule）只使用密码的前 72 字节，
+		// 超出部分被静默忽略，导致前 72 字节相同的不同密码产生相同哈希值
+		// CVE-2025-22234 回归修复：仅在 encode 路径（for_check=false）检查长度，
+		// matches/checkpw 路径（for_check=true）跳过检查，
+		// 以保持 DaoAuthenticationProvider.mitigateAgainstTimingAttack() 的时序攻击防护
+		if (!for_check && passwordb.length > 72) {
+			throw new IllegalArgumentException("password cannot be more than 72 bytes");
+		}
+
 		if (minor >= 'a') {
 			passwordb = Arrays.copyOf(passwordb, passwordb.length + 1);
 		}
