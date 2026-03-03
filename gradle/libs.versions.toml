@@ -22,8 +22,10 @@ ch-qos-logback-logback-classic = "ch.qos.logback:logback-classic:1.2.13"
 com-fasterxml-jackson-jackson-bom = "com.fasterxml.jackson:jackson-bom:2.13.5"
 com-google-inject-guice = "com.google.inject:guice:3.0"
 com-netflix-nebula-nebula-project-plugin = "com.netflix.nebula:nebula-project-plugin:8.2.0"
-com-nimbusds-nimbus-jose-jwt = "com.nimbusds:nimbus-jose-jwt:9.24.4"
-com-nimbusds-oauth2-oidc-sdk = "com.nimbusds:oauth2-oidc-sdk:9.43.3"
+# nimbus-jose-jwt 升级至 10.8，修复 CVE-2023-52428（PBKDF2 DoS）和 CVE-2025-53864（JSON 递归 DoS）
+com-nimbusds-nimbus-jose-jwt = "com.nimbusds:nimbus-jose-jwt:10.8"
+# oauth2-oidc-sdk 同步升级至 11.33（最新版，传递依赖 nimbus-jose-jwt 10.6，与 10.8 兼容）
+com-nimbusds-oauth2-oidc-sdk = "com.nimbusds:oauth2-oidc-sdk:11.33"
 com-squareup-okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "com-squareup-okhttp3" }
 com-squareup-okhttp3-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "com-squareup-okhttp3" }
 com-unboundid-unboundid-ldapsdk = "com.unboundid:unboundid-ldapsdk:4.0.14"
