@@ -2,7 +2,7 @@
 
 ## 任务主题
 
-Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE-2025-22234、CVE-2025-22233、CVE-2025-41249）、Nexus 私服发布配置、nimbus-jose-jwt 依赖升级
+Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE-2025-22234、CVE-2025-22233、CVE-2025-41249、CVE-2024-22257、CVE-2024-22258、CVE-2024-38827、CVE-2024-38821）、Nexus 私服发布配置、nimbus-jose-jwt 依赖升级
 
 ## 分支信息
 
@@ -21,6 +21,11 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 | CVE-2025-22234 | 5.3 MEDIUM | Spring Security (BCrypt) | **已覆盖** | CVE-2025-22228 的回归修复，采用合并修复策略一步到位，从未暴露于此漏洞 |
 | CVE-2025-22233 | 3.1 LOW | Spring Framework (DataBinder) | **不适用** | 漏洞位于 Spring Framework spring-context 模块，非 Spring Security 代码范围 |
 | CVE-2025-41249 | 7.5 HIGH | Spring Framework (AnnotationsScanner) | **不适用** | 漏洞位于 Spring Framework spring-core 模块，配套 CVE-2025-41248 仅影响 6.x |
+| CVE-2024-22257 | 8.2 HIGH | Spring Security (AuthenticatedVoter) | **已在基线修复** | 空 Authentication 绕过，5.8.11 已修，基线 5.8.16 已包含修复 |
+| CVE-2025-22228 | 7.4 HIGH | Spring Security (BCrypt) | **已修复** | 重复需求——之前 Phase 4 已修复并记录文档 |
+| CVE-2024-22258 | 6.1 MEDIUM | Spring Authorization Server (PKCE) | **不适用** | 漏洞位于 Spring Authorization Server，非 Spring Security 核心代码范围 |
+| CVE-2024-38827 | 4.8 MEDIUM | Spring Security (Locale 大小写) | **已在基线修复** | Locale 相关 toLowerCase/toUpperCase 绕过，5.8.16 已修，基线已包含修复 |
+| CVE-2024-38821 | 9.3 CRITICAL | Spring Security (WebFlux 防火墙) | **已在基线修复** | WebFlux 静态资源 URL 规范化绕过，5.8.15 已修，基线 5.8.16 已包含修复 |
 
 ## 依赖升级
 
@@ -63,3 +68,7 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 | `doc/CVE/CVE-2025-41249.md` | 注解扫描泛型授权绕过——不适用 |
 | `doc/CVE/CVE-2023-52428.md` | nimbus-jose-jwt 算法混淆——已通过升级修复 |
 | `doc/CVE/CVE-2025-53864.md` | nimbus-jose-jwt 漏洞——已通过升级修复 |
+| `doc/CVE/CVE-2024-22257.md` | AuthenticatedVoter 空认证绕过——已在基线修复 |
+| `doc/CVE/CVE-2024-22258.md` | Spring Authorization Server PKCE 降级攻击——不适用 |
+| `doc/CVE/CVE-2024-38827.md` | Locale 大小写转换授权绕过——已在基线修复 |
+| `doc/CVE/CVE-2024-38821.md` | WebFlux 静态资源授权绕过——已在基线修复 |
