@@ -152,6 +152,14 @@ subprojects {
 	}
 }
 
+// 忽略 remoting 模块：内部 Spring Framework fork 不包含 org.springframework.remoting.httpinvoker 包
+// （该功能在 Spring 6.x 中已移除，内部 fork 同样未保留该模块）
+// hudson：所有子任务均设为 disabled，构建时跳过该项目
+project(':bjca-footstone-bpring-security-remoting') {
+	tasks.all { task ->
+		task.enabled = false
+	}
+}
 
 allprojects {
 	if (!['spring-security-bom', 'spring-security-docs'].contains(project.name)) {
@@ -194,7 +202,7 @@ develocity {
 
 nohttp {
 	source.exclude "buildSrc/build/**"
-	source.builtBy(project(':spring-security-config').tasks.withType(RncToXsd))
+	source.builtBy(project(':bjca-footstone-bpring-security-config').tasks.withType(RncToXsd))
 }
 
 tasks.register('cloneSamples', IncludeRepoTask) {

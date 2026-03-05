@@ -50,8 +50,8 @@ compileOpensaml4TestJava {
 }
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-web')
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-web')
 	api "org.opensaml:opensaml-core"
 	api "org.opensaml:opensaml-saml-api"
 	api "org.opensaml:opensaml-saml-impl"
@@ -72,7 +72,7 @@ dependencies {
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-inline"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 }
 
 project.tasks.matching { t -> t.name == "jar"}.configureEach {

@@ -1,23 +1,23 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
-	api project(':spring-security-web')
-	api 'org.springframework:spring-core'
-	api 'org.springframework:spring-test'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
+	api project(':bjca-footstone-bpring-security-web')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-test'
 
-	optional project(':spring-security-config')
-	optional project(':spring-security-oauth2-client')
-	optional project(':spring-security-oauth2-jose')
-	optional project(':spring-security-oauth2-resource-server')
+	optional project(':bjca-footstone-bpring-security-config')
+	optional project(':bjca-footstone-bpring-security-oauth2-client')
+	optional project(':bjca-footstone-bpring-security-oauth2-jose')
+	optional project(':bjca-footstone-bpring-security-oauth2-resource-server')
 	optional 'io.projectreactor:reactor-core'
-	optional 'org.springframework:spring-webmvc'
-	optional 'org.springframework:spring-webflux'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-webmvc'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-webflux'
 
 	provided 'jakarta.servlet:jakarta.servlet-api'
 
-	testImplementation project(path : ':spring-security-config', configuration : 'tests')
+	testImplementation project(path : ':bjca-footstone-bpring-security-config', configuration : 'tests')
 	testImplementation 'com.fasterxml.jackson.core:jackson-databind'
 	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	testImplementation 'io.projectreactor:reactor-test'
@@ -29,8 +29,8 @@ dependencies {
 	testImplementation "org.mockito:mockito-core"
 	testImplementation 'org.mockito:mockito-inline'
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 	testImplementation 'org.skyscreamer:jsonassert'
-	testImplementation 'org.springframework:spring-webmvc'
-	testImplementation 'org.springframework:spring-tx'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-webmvc'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-tx'
 }

@@ -5,9 +5,9 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
-	api project(':spring-security-web')
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
+	api project(':bjca-footstone-bpring-security-web')
 	api('com.google.inject:guice') {
 		exclude group: 'aopalliance', module: 'aopalliance'
 		exclude group: 'javax.inject', module: 'javax.inject'
@@ -19,11 +19,11 @@ dependencies {
 		exclude group: 'com.google.code.guice', module: 'guice'
 		exclude group: 'commons-logging', module: 'commons-logging'
 	}
-	api 'org.springframework:spring-aop'
-	api 'org.springframework:spring-beans'
-	api 'org.springframework:spring-context'
-	api 'org.springframework:spring-core'
-	api 'org.springframework:spring-web'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-aop'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-beans'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-context'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-web'
 
 	provided 'jakarta.servlet:jakarta.servlet-api'
 
@@ -39,5 +39,5 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 }

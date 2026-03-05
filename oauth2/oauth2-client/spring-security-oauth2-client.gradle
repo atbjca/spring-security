@@ -1,23 +1,23 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
-	api project(':spring-security-oauth2-core')
-	api project(':spring-security-web')
-	api 'org.springframework:spring-core'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
+	api project(':bjca-footstone-bpring-security-oauth2-core')
+	api project(':bjca-footstone-bpring-security-web')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
 	api 'com.nimbusds:oauth2-oidc-sdk'
 
-	optional project(':spring-security-oauth2-jose')
+	optional project(':bjca-footstone-bpring-security-oauth2-jose')
 	optional 'io.projectreactor:reactor-core'
-	optional 'org.springframework:spring-webflux'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-webflux'
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-	optional 'org.springframework:spring-jdbc'
-	optional 'org.springframework:spring-r2dbc'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jdbc'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-r2dbc'
 
-	testImplementation project(path: ':spring-security-oauth2-core', configuration: 'tests')
-	testImplementation project(path: ':spring-security-oauth2-jose', configuration: 'tests')
+	testImplementation project(path: ':bjca-footstone-bpring-security-oauth2-core', configuration: 'tests')
+	testImplementation project(path: ':bjca-footstone-bpring-security-oauth2-jose', configuration: 'tests')
 	testImplementation 'com.squareup.okhttp3:mockwebserver'
 	testImplementation 'io.projectreactor.netty:reactor-netty'
 	testImplementation 'io.projectreactor:reactor-test'
@@ -31,7 +31,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 
 	testRuntimeOnly 'org.hsqldb:hsqldb'
 

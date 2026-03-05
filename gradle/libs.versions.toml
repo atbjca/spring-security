@@ -15,7 +15,10 @@ org-mockito = "4.8.1"
 org-opensaml4 = "4.1.0"
 org-opensaml3 = "3.4.6"
 org-slf4j = "1.7.36"
-org-springframework = "5.3.39"
+# 内部 Spring Framework fork 实际发布版本（私服路径为 -nes.patch.1-SNAPSHOT/，不含 5.3.39 前缀）
+# 这是因为 Spring Framework fork 构建时版本配置有误，后续需重新发布正确版本 5.3.39-nes.patch.1-SNAPSHOT
+org-springframework = "5.3.39-nes.patch.1-SNAPSHOT"
+
 
 [libraries]
 ch-qos-logback-logback-classic = "ch.qos.logback:logback-classic:1.2.13"
@@ -94,7 +97,7 @@ org-slf4j-log4j-over-slf4j = { module = "org.slf4j:log4j-over-slf4j", version.re
 org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j" }
 org-springframework-data-spring-data-bom = "org.springframework.data:spring-data-bom:2021.2.18"
 org-springframework-ldap-spring-ldap-core = "org.springframework.ldap:spring-ldap-core:2.4.4"
-org-springframework-spring-framework-bom = { module = "org.springframework:spring-framework-bom", version.ref = "org-springframework" }
+org-springframework-spring-framework-bom = { module = "cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom", version.ref = "org-springframework" }
 org-synchronoss-cloud-nio-multipart-parser = "org.synchronoss.cloud:nio-multipart-parser:1.1.0"
 
 com-google-code-gson-gson = "com.google.code.gson:gson:2.8.9"

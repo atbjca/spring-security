@@ -1,14 +1,14 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
-	api 'org.springframework:spring-core'
-	api 'org.springframework:spring-web'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-web'
 
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'com.nimbusds:oauth2-oidc-sdk'
-	optional 'org.springframework:spring-webflux'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-webflux'
 
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.junit.jupiter:junit-jupiter-api"
@@ -16,5 +16,5 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 }

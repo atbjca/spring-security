@@ -21,10 +21,10 @@ tasks.named("generateAntoraYml") {
 }
 
 dependencies {
-	testImplementation platform(project(':spring-security-dependencies'))
+	testImplementation platform(project(':bjca-footstone-bpring-security-dependencies'))
 	testImplementation 'com.unboundid:unboundid-ldapsdk'
 	testImplementation 'org.apache.directory.server:apacheds-core'
-	testImplementation 'org.springframework:spring-core'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
 }
 
 def generateAttributes() {

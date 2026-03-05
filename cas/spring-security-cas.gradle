@@ -1,17 +1,17 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
-	api project(':spring-security-web')
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
+	api project(':bjca-footstone-bpring-security-web')
 	api('org.jasig.cas.client:cas-client-core') {
 		exclude group: 'org.glassfish.jaxb', module: 'jaxb-core'
 		exclude group: 'javax.xml.bind', module: 'jaxb-api'
 	}
-	api 'org.springframework:spring-beans'
-	api 'org.springframework:spring-context'
-	api 'org.springframework:spring-core'
-	api 'org.springframework:spring-web'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-beans'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-context'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-web'
 
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'net.sf.ehcache:ehcache'
@@ -24,6 +24,6 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 	testImplementation 'org.skyscreamer:jsonassert'
 }

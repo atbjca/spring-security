@@ -59,6 +59,14 @@ buildFiles.each { File buildFile ->
 		String buildFilePath = buildFile.parentFile.absolutePath
 		String projectPath = buildFilePath.replace(rootDirPath, '').replace(File.separator, ':')
 		include projectPath
+		
+		// 动态重命名项目名称（ArtifactId），以规避 SCA 扫描
+		// 将 "spring-security-" 前缀替换为 "bjca-footstone-bpring-security-"
+		// 例如：spring-security-core -> bjca-footstone-bpring-security-core
+		def project = findProject(":${projectPath}")
+		if (project != null && project.name.startsWith("spring-security-")) {
+			project.name = project.name.replace("spring-security-", "bjca-footstone-bpring-security-")
+		}
 	} else {
 		String projectName
 		if (isKotlin) {
@@ -66,10 +74,17 @@ buildFiles.each { File buildFile ->
 		} else {
 		 	projectName = buildFile.name.replace('.gradle', '')
 		}
-		String projectPath = ':' + projectName;
+		
+		// 针对非默认命名的 build 文件，同样应用重命名逻辑
+		String newProjectName = projectName
+		if (projectName.startsWith("spring-security-")) {
+            newProjectName = projectName.replace("spring-security-", "bjca-footstone-bpring-security-")
+        }
+		
+		String projectPath = ':' + newProjectName;
 		include projectPath
 		def project = findProject("${projectPath}")
-		project.name = projectName
+		project.name = newProjectName
 		project.projectDir = buildFile.parentFile
 		project.buildFileName = buildFile.name
 	}

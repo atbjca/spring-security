@@ -26,10 +26,12 @@ clean:
 build: clean
 	$(JAVA_INIT) ./gradlew build
 
-# 快速构建：跳过测试、代码格式检查（checkstyle/checkFormat）和文档模块
+# 快速构建：跳过测试、集成测试、代码格式检查（checkstyle/checkFormat）和文档模块
 # 适用于日常开发验证编译是否通过
+# 注：-x checkstyleNohttp 跳过 nohttp 检查（输入文件在初次构建后才会存在）
+# 注：-x integrationTest 跳过集成测试（-x test 不会自动跳过自定义的 integrationTest 任务）
 build-thin: clean
-	$(JAVA_INIT) ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x checkFormatMain -x checkFormatTest -x :spring-security-docs:antora -x :spring-security-docs:docs -x javadoc
+	$(JAVA_INIT) ./gradlew build -x test -x integrationTest -x checkstyleMain -x checkstyleTest -x checkFormatMain -x checkFormatTest -x :bjca-footstone-bpring-security-docs:antora -x :bjca-footstone-bpring-security-docs:docs -x javadoc -x checkstyleNohttp
 
 # 发布到本地 Maven 仓库（~/.m2/repository）
 # 跳过测试，供本地其他项目依赖调试使用

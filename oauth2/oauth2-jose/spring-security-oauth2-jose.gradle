@@ -1,14 +1,14 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
-	api project(':spring-security-oauth2-core')
-	api 'org.springframework:spring-core'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
+	api project(':bjca-footstone-bpring-security-oauth2-core')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
 	api 'com.nimbusds:nimbus-jose-jwt'
 
 	optional 'io.projectreactor:reactor-core'
-	optional 'org.springframework:spring-webflux'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-webflux'
 
 	testImplementation 'com.squareup.okhttp3:mockwebserver'
 	testImplementation 'io.projectreactor.netty:reactor-netty'
@@ -19,5 +19,5 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 }
