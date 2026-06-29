@@ -26,7 +26,8 @@ apply plugin: 'org.springframework.security.versions.verify-dependencies-version
 apply plugin: 'org.springframework.security.check-expected-branch-version'
 apply plugin: 'io.spring.security.release'
 
-group = 'org.springframework.security'
+// 设置项目组 ID，引用 gradle.properties 中定义的 projectGroup 属性
+group = projectGroup
 description = 'Spring Security'
 
 ext.snapshotBuild = version.contains("SNAPSHOT")
@@ -34,8 +35,57 @@ ext.releaseBuild = version.contains("SNAPSHOT")
 ext.milestoneBuild = !(snapshotBuild || releaseBuild)
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 	maven { url "https://repo.spring.io/milestone" }
+}
+
+// Nexus 私服仓库配置（所有项目的依赖下载源）
+allprojects {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		maven {
+			name = 'nexus'
+			url = nexusPublicUrl
+			allowInsecureProtocol = true
+			credentials {
+				username = nexusUsername
+				password = nexusPassword
+			}
+		}
+		if (version.toString().endsWith('-SNAPSHOT')) {
+			maven {
+				name = 'nexus-snapshots'
+				url = nexusSnapshotUrl
+				allowInsecureProtocol = true
+				credentials {
+					username = nexusUsername
+					password = nexusPassword
+				}
+			}
+		}
+		maven { url "https://repo.spring.io/milestone" }
+	}
+}
+
+// 配置全局 Maven 发布仓库
+allprojects {
+	plugins.withType(MavenPublishPlugin).all {
+		publishing {
+			repositories {
+				maven {
+					name = 'nexus'
+					url = project.version.toString().endsWith('-SNAPSHOT') ? nexusSnapshotUrl : nexusReleaseUrl
+					allowInsecureProtocol = true
+					credentials {
+						username = nexusUsername
+						password = nexusPassword
+					}
+				}
+			}
+		}
+	}
 }
 
 springRelease {
@@ -72,7 +122,7 @@ subprojects {
 }
 
 allprojects {
-	if (!['spring-security-bom', 'spring-security-docs'].contains(project.name)) {
+	if (!['bjca-footstone-bpring-security-bom', 'bjca-footstone-bpring-security-docs'].contains(project.name)) {
 		apply plugin: 'io.spring.javaformat'
 		apply plugin: 'checkstyle'
 
@@ -106,7 +156,7 @@ develocity {
 
 nohttp {
 	source.exclude "buildSrc/build/**", "javascript/.gradle/**", "javascript/package-lock.json", "javascript/node_modules/**", "javascript/build/**", "javascript/dist/**"
-	source.builtBy(project(':spring-security-config').tasks.withType(RncToXsd))
+	source.builtBy(project(':bjca-footstone-bpring-security-config').tasks.withType(RncToXsd))
 }
 
 tasks.named('checkstyleNohttp') {

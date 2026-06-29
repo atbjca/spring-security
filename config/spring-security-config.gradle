@@ -13,33 +13,33 @@ configurations {
 }
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
 	// NB: Don't add other compile time dependencies to the config module as this breaks tooling
-	api project(':spring-security-core')
-	api 'org.springframework:spring-aop'
-	api 'org.springframework:spring-beans'
-	api 'org.springframework:spring-context'
-	api 'org.springframework:spring-core'
+	api project(':bjca-footstone-bpring-security-core')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-aop'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-beans'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-context'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
 
-	optional project(':spring-security-data')
-	optional project(':spring-security-ldap')
-	optional project(':spring-security-messaging')
-	optional project(path: ':spring-security-saml2-service-provider')
-	opensaml5 project(path: ':spring-security-saml2-service-provider', configuration: 'opensamlFiveMain')
-	optional project(':spring-security-oauth2-client')
-	optional project(':spring-security-oauth2-jose')
-	optional project(':spring-security-oauth2-resource-server')
-	optional project(':spring-security-rsocket')
-	optional project(':spring-security-web')
+	optional project(':bjca-footstone-bpring-security-data')
+	optional project(':bjca-footstone-bpring-security-ldap')
+	optional project(':bjca-footstone-bpring-security-messaging')
+	optional project(path: ':bjca-footstone-bpring-security-saml2-service-provider')
+	opensaml5 project(path: ':bjca-footstone-bpring-security-saml2-service-provider', configuration: 'opensamlFiveMain')
+	optional project(':bjca-footstone-bpring-security-oauth2-client')
+	optional project(':bjca-footstone-bpring-security-oauth2-jose')
+	optional project(':bjca-footstone-bpring-security-oauth2-resource-server')
+	optional project(':bjca-footstone-bpring-security-rsocket')
+	optional project(':bjca-footstone-bpring-security-web')
 	optional 'io.projectreactor:reactor-core'
 	optional 'org.aspectj:aspectjweaver'
-	optional 'org.springframework:spring-jdbc'
-	optional 'org.springframework:spring-messaging'
-	optional 'org.springframework:spring-tx'
-	optional 'org.springframework:spring-webmvc'
-	optional'org.springframework:spring-web'
-	optional'org.springframework:spring-webflux'
-	optional'org.springframework:spring-websocket'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jdbc'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-messaging'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-tx'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-webmvc'
+	optional'cn.bjca.footstone.bpring:bjca-footstone-bpring-web'
+	optional'cn.bjca.footstone.bpring:bjca-footstone-bpring-webflux'
+	optional'cn.bjca.footstone.bpring:bjca-footstone-bpring-websocket'
 	optional 'org.jetbrains.kotlin:kotlin-reflect'
 	optional 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 	optional 'jakarta.annotation:jakarta.annotation-api'
@@ -47,16 +47,16 @@ dependencies {
 
 	provided 'jakarta.servlet:jakarta.servlet-api'
 
-	testImplementation project(':spring-security-aspects')
-	testImplementation project(':spring-security-cas')
-	testImplementation project(':spring-security-test')
-	testImplementation project(path : ':spring-security-core', configuration : 'tests')
-	testImplementation project(path : ':spring-security-ldap', configuration : 'tests')
-	testImplementation project(path : ':spring-security-oauth2-client', configuration : 'tests')
-	testImplementation project(path : ':spring-security-oauth2-resource-server', configuration : 'tests')
-	testImplementation project(':spring-security-saml2-service-provider')
-	testImplementation project(path : ':spring-security-saml2-service-provider', configuration : 'tests')
-	testImplementation project(path : ':spring-security-web', configuration : 'tests')
+	testImplementation project(':bjca-footstone-bpring-security-aspects')
+	testImplementation project(':bjca-footstone-bpring-security-cas')
+	testImplementation project(':bjca-footstone-bpring-security-test')
+	testImplementation project(path : ':bjca-footstone-bpring-security-core', configuration : 'tests')
+	testImplementation project(path : ':bjca-footstone-bpring-security-ldap', configuration : 'tests')
+	testImplementation project(path : ':bjca-footstone-bpring-security-oauth2-client', configuration : 'tests')
+	testImplementation project(path : ':bjca-footstone-bpring-security-oauth2-resource-server', configuration : 'tests')
+	testImplementation project(':bjca-footstone-bpring-security-saml2-service-provider')
+	testImplementation project(path : ':bjca-footstone-bpring-security-saml2-service-provider', configuration : 'tests')
+	testImplementation project(path : ':bjca-footstone-bpring-security-web', configuration : 'tests')
 	testImplementation "jakarta.inject:jakarta.inject-api"
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.junit.jupiter:junit-jupiter-api"
@@ -64,7 +64,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 	testImplementation 'com.squareup.okhttp3:mockwebserver'
 	testImplementation 'ch.qos.logback:logback-classic'
 	testImplementation 'io.projectreactor.netty:reactor-netty'
@@ -98,11 +98,11 @@ dependencies {
 		exclude group: 'io.netty', module: 'netty'
 	}
 	testImplementation 'org.springframework.ldap:spring-ldap-core'
-	testImplementation 'org.springframework:spring-expression'
-	testImplementation 'org.springframework:spring-jdbc'
-	testImplementation 'org.springframework:spring-orm'
-	testImplementation 'org.springframework:spring-tx'
-	testImplementation 'org.springframework:spring-core-test'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-expression'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jdbc'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-orm'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-tx'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core-test'
 	testImplementation ('org.springframework.data:spring-data-jpa') {
 		exclude group: 'org.aspectj', module: 'aspectjrt'
 	}

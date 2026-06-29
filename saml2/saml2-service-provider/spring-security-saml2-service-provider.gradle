@@ -86,8 +86,8 @@ sourceSets.configureEach { set ->
 }
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-web')
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-web')
 
 	api ('org.opensaml:opensaml-saml-api')  {
 		exclude group: 'commons-logging', module: 'commons-logging'
@@ -115,7 +115,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

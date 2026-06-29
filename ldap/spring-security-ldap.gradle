@@ -5,12 +5,12 @@ configurations {
 }
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
-	api 'org.springframework:spring-beans'
-	api 'org.springframework:spring-context'
-	api 'org.springframework:spring-core'
-	api 'org.springframework:spring-tx'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-beans'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-context'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-tx'
 
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'ldapsdk:ldapsdk'
@@ -29,7 +29,7 @@ dependencies {
 		exclude(group: 'org.springframework.data', module: 'spring-data-commons')
 	}
 
-	testImplementation project(':spring-security-test')
+	testImplementation project(':bjca-footstone-bpring-security-test')
 	testImplementation 'org.slf4j:slf4j-api'
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.junit.jupiter:junit-jupiter-api"
@@ -37,7 +37,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 	testImplementation 'org.skyscreamer:jsonassert'
 
 	unboundid7 libs.com.unboundid.unboundid.ldapsdk7

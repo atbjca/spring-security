@@ -6,13 +6,13 @@ apply plugin: 'io.spring.convention.spring-module'
 apply plugin: 'kotlin'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-crypto')
-	api 'org.springframework:spring-aop'
-	api 'org.springframework:spring-beans'
-	api 'org.springframework:spring-context'
-	api 'org.springframework:spring-core'
-	api 'org.springframework:spring-expression'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-crypto')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-aop'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-beans'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-context'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-expression'
 	api 'io.micrometer:micrometer-observation'
 
 	optional 'com.fasterxml.jackson.core:jackson-databind'
@@ -20,8 +20,8 @@ dependencies {
 	optional 'io.projectreactor:reactor-core'
 	optional 'jakarta.annotation:jakarta.annotation-api'
 	optional 'org.aspectj:aspectjrt'
-	optional 'org.springframework:spring-jdbc'
-	optional 'org.springframework:spring-tx'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jdbc'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-tx'
 	optional 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'
 
 	testImplementation 'commons-collections:commons-collections'
@@ -32,10 +32,10 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-core-test"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-core-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 	testImplementation 'org.skyscreamer:jsonassert'
-	testImplementation 'org.springframework:spring-test'
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-reflect'
 	testImplementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 	testImplementation 'io.mockk:mockk'
@@ -46,7 +46,7 @@ dependencies {
 
 task springVersion(type: org.gradle.api.tasks.WriteProperties) {
 	destinationFile = file("${buildDir}/versions/spring-security.versions")
-	property("org.springframework:spring-core", springVersion())
+	property("cn.bjca.footstone.bpring:bjca-footstone-bpring-core", springVersion())
 }
 
 tasks.processResources {
@@ -64,7 +64,7 @@ configure(project.tasks.withType(Test)) {
 
 Callable<String> springVersion() {
 	return  (Callable<String>) { project.configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts
-    .find { it.name == 'spring-core' }.moduleVersion.id.version }
+    .find { it.name == 'bjca-footstone-bpring-core' }.moduleVersion.id.version }
 }
 
 tasks.withType(KotlinCompile).configureEach {

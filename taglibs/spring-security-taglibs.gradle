@@ -1,16 +1,16 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-acl')
-	api project(':spring-security-core')
-	api project(':spring-security-web')
-	api 'org.springframework:spring-aop'
-	api 'org.springframework:spring-beans'
-	api 'org.springframework:spring-context'
-	api 'org.springframework:spring-core'
-	api 'org.springframework:spring-expression'
-	api 'org.springframework:spring-web'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-acl')
+	api project(':bjca-footstone-bpring-security-core')
+	api project(':bjca-footstone-bpring-security-web')
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-aop'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-beans'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-context'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-expression'
+	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-web'
 
 	provided 'jakarta.servlet.jsp:jakarta.servlet.jsp-api'
 	provided 'jakarta.servlet:jakarta.servlet-api'
@@ -23,7 +23,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

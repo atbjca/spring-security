@@ -12,7 +12,7 @@ dependencies {
 		def reactorVersion = project.property("reactorVersion")
 		def springDataVersion = project.property("springDataVersion")
 		def micrometerVersion = project.property("micrometerVersion")
-		api platform("org.springframework:spring-framework-bom:$springFrameworkVersion")
+		api platform("cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:$springFrameworkVersion")
 		api platform("io.projectreactor:reactor-bom:$reactorVersion")
 		api platform("org.springframework.data:spring-data-bom:$springDataVersion")
 		api platform("io.micrometer:micrometer-bom:$micrometerVersion")

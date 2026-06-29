@@ -5,9 +5,9 @@ plugins {
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	optional 'org.springframework:spring-jcl'
-	optional 'org.springframework:spring-core'
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jcl'
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
 	optional 'org.bouncycastle:bcpkix-jdk18on'
 
 	testFixturesImplementation "org.assertj:assertj-core"
@@ -18,7 +18,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

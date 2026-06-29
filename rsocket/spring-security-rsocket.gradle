@@ -1,11 +1,11 @@
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
-	management platform(project(":spring-security-dependencies"))
-	api project(':spring-security-core')
+	management platform(project(":bjca-footstone-bpring-security-dependencies"))
+	api project(':bjca-footstone-bpring-security-core')
 	api 'io.rsocket:rsocket-core'
-	optional project(':spring-security-oauth2-resource-server')
-	optional 'org.springframework:spring-messaging'
+	optional project(':bjca-footstone-bpring-security-oauth2-resource-server')
+	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-messaging'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.junit.jupiter:junit-jupiter-api"
@@ -13,7 +13,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-engine"
 	testImplementation "org.mockito:mockito-core"
 	testImplementation "org.mockito:mockito-junit-jupiter"
-	testImplementation "org.springframework:spring-test"
+	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

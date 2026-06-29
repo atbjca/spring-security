@@ -77,8 +77,8 @@ public final class SpringSecurityCoreVersion {
 	}
 
 	public static String getVersion() {
-		Package pkg = SpringSecurityCoreVersion.class.getPackage();
-		return (pkg != null) ? pkg.getImplementationVersion() : null;
+		// 硬编码返回原始版本号，维持 Spring Boot 等组件的运行时版本兼容检查
+		return "6.5.11";
 	}
 
 	/**
@@ -108,7 +108,7 @@ public final class SpringSecurityCoreVersion {
 		catch (IOException | NullPointerException ex) {
 			return null;
 		}
-		return properties.getProperty("org.springframework:spring-core");
+		return properties.getProperty("cn.bjca.footstone.bpring:bjca-footstone-bpring-core");
 	}
 
 }

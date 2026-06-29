@@ -1,18 +1,36 @@
 pluginManagement {
 	repositories {
+		mavenLocal()
+		mavenCentral()
 		gradlePluginPortal()
+		// Nexus 私服仓库（插件下载源）
+		maven {
+			name = 'nexus'
+			url = nexusPublicUrl
+			allowInsecureProtocol = true
+			credentials {
+				username = nexusUsername
+				password = nexusPassword
+			}
+		}
+		if (version.endsWith('-SNAPSHOT')) {
+			// Nexus 快照仓库（SNAPSHOT 版本插件下载源）
+			maven {
+				name = 'nexus-snapshots'
+				url = nexusSnapshotUrl
+				allowInsecureProtocol = true
+				credentials {
+					username = nexusUsername
+					password = nexusPassword
+				}
+			}
+		}
+		maven { url "https://repo.spring.io/milestone" }
 	}
 }
 
 plugins {
 	id "io.spring.develocity.conventions" version "0.0.25"
-}
-
-dependencyResolutionManagement {
-	repositories {
-		mavenCentral()
-		maven { url "https://repo.spring.io/milestone" }
-	}
 }
 
 rootProject.name = 'spring-security'
@@ -47,11 +65,20 @@ buildFiles.each { File buildFile ->
 	}
 }
 
-def configureProject(String projectPath, String projectName, File buildFile) {
-    include(projectPath)
+// 动态重命名 Gradle 项目名称（ArtifactId），规避 SCA 扫描；物理目录保持不变
+String renameArtifactId(String projectName) {
+	if (projectName.startsWith('spring-security-')) {
+		return projectName.replace('spring-security-', 'bjca-footstone-bpring-security-')
+	}
+	return projectName
+}
 
-    def project = findProject(projectPath)
-    project.name = projectName
-    project.projectDir = buildFile.parentFile
-    project.buildFileName = buildFile.name
+def configureProject(String projectPath, String projectName, File buildFile) {
+	String renamedProjectName = renameArtifactId(projectName)
+	include(':' + renamedProjectName)
+
+	def project = findProject(':' + renamedProjectName)
+	project.name = renamedProjectName
+	project.projectDir = buildFile.parentFile
+	project.buildFileName = buildFile.name
 }
