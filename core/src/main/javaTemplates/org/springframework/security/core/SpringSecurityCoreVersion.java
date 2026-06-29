@@ -76,9 +76,14 @@ public final class SpringSecurityCoreVersion {
 		}
 	}
 
+	/**
+	 * 返回 Spring Security 上游基线版本号。
+	 * 构建时由 gradle.properties 的 springSecurityVersion 注入（见 core/spring-security-core.gradle syncJavaTemplates）。
+	 * 与 Maven 发布版本（含 nes.patch 后缀）区分，供 Spring Boot 等下游做运行时兼容检查。
+	 * @return 上游语义版本，例如 6.5.11
+	 */
 	public static String getVersion() {
-		// 硬编码返回原始版本号，维持 Spring Boot 等组件的运行时版本兼容检查
-		return "6.5.11";
+		return "${springSecurityVersion}";
 	}
 
 	/**
@@ -96,8 +101,9 @@ public final class SpringSecurityCoreVersion {
 	}
 
 	/**
-	 * Loads the spring version or null if it cannot be found.
-	 * @return
+	 * 从 META-INF/spring-security.versions 加载 Spring Framework 最低兼容版本。
+	 * GAV 重命名后，properties key 改为内部 fork 的 core 模块坐标。
+	 * @return Spring Framework 版本字符串，加载失败时返回 null
 	 */
 	private static String getSpringVersion() {
 		Properties properties = new Properties();
@@ -108,6 +114,7 @@ public final class SpringSecurityCoreVersion {
 		catch (IOException | NullPointerException ex) {
 			return null;
 		}
+		// 对应 core 模块 springVersion 任务写入的 key（见 spring-security-core.gradle）
 		return properties.getProperty("cn.bjca.footstone.bpring:bjca-footstone-bpring-core");
 	}
 

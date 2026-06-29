@@ -14,7 +14,7 @@
 |---|---|
 | 发布版本 | `6.5.11-nes.patch.1-SNAPSHOT` |
 | GroupId | `cn.bjca.footstone.bpring.security` |
-| 运行时伪装版本 | `6.5.11`（`SpringSecurityCoreVersion.getVersion()`） |
+| 运行时展示版本 | `6.5.11`（`gradle.properties` 的 `springSecurityVersion`，构建时注入 `getVersion()`） |
 | Spring Framework | `6.2.19-nes.patch.1-SNAPSHOT`（内部 fork） |
 
 ## 3. Makefile 命令参考

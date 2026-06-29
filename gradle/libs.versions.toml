@@ -15,7 +15,8 @@ org-jetbrains-kotlinx = "1.10.2"
 org-mockito = "5.17.0"
 org-opensaml = "4.3.2"
 org-opensaml5 = "5.1.2"
-# 内部 Spring Framework fork 实际发布版本
+# 内部 Spring Framework fork 实际发布版本（私服路径：6.2.19-nes.patch.1-SNAPSHOT）
+# 替代官方 org.springframework:spring-framework-bom:6.2.19
 org-springframework = "6.2.19-nes.patch.1-SNAPSHOT"
 
 [libraries]
@@ -94,6 +95,7 @@ org-slf4j-log4j-over-slf4j = "org.slf4j:log4j-over-slf4j:1.7.36"
 org-slf4j-slf4j-api = "org.slf4j:slf4j-api:2.0.18"
 org-springframework-data-spring-data-bom = "org.springframework.data:spring-data-bom:2024.1.13"
 org-springframework-ldap-spring-ldap-core = "org.springframework.ldap:spring-ldap-core:3.2.16"
+# Spring Framework BOM：重定向至内部 fork，统一管控所有 bjca-footstone-bpring-* 模块版本
 org-springframework-spring-framework-bom = { module = "cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom", version.ref = "org-springframework" }
 org-synchronoss-cloud-nio-multipart-parser = "org.synchronoss.cloud:nio-multipart-parser:1.1.0"
 

@@ -27,6 +27,7 @@ apply plugin: 'org.springframework.security.check-expected-branch-version'
 apply plugin: 'io.spring.security.release'
 
 // 设置项目组 ID，引用 gradle.properties 中定义的 projectGroup 属性
+// 当前值：cn.bjca.footstone.bpring.security（替代官方 org.springframework.security）
 group = projectGroup
 description = 'Spring Security'
 
@@ -40,11 +41,13 @@ repositories {
 	maven { url "https://repo.spring.io/milestone" }
 }
 
-// Nexus 私服仓库配置（所有项目的依赖下载源）
+// Nexus 私服仓库配置（所有子项目的依赖下载源）
+// 凭证与地址在 ~/.gradle/gradle.properties 中配置：nexusPublicUrl / nexusSnapshotUrl 等
 allprojects {
 	repositories {
 		mavenLocal()
 		mavenCentral()
+		// Nexus 公共聚合仓库（release + snapshot 代理）
 		maven {
 			name = 'nexus'
 			url = nexusPublicUrl
@@ -55,6 +58,7 @@ allprojects {
 			}
 		}
 		if (version.toString().endsWith('-SNAPSHOT')) {
+			// SNAPSHOT 版本额外声明快照仓库，确保内部 fork 依赖可解析
 			maven {
 				name = 'nexus-snapshots'
 				url = nexusSnapshotUrl
@@ -69,13 +73,15 @@ allprojects {
 	}
 }
 
-// 配置全局 Maven 发布仓库
+// 配置全局 Maven 发布仓库，确保所有已应用 MavenPublishPlugin 的子项目发布到 Nexus
+// 通过 plugins.withType 模式，仅对实际需要发布的模块生效（spring-module、bom 等）
 allprojects {
 	plugins.withType(MavenPublishPlugin).all {
 		publishing {
 			repositories {
 				maven {
 					name = 'nexus'
+					// 根据版本号自动选择目标仓库：SNAPSHOT → 快照仓库，Release → 正式仓库
 					url = project.version.toString().endsWith('-SNAPSHOT') ? nexusSnapshotUrl : nexusReleaseUrl
 					allowInsecureProtocol = true
 					credentials {
@@ -122,6 +128,7 @@ subprojects {
 }
 
 allprojects {
+	// GAV 重命名后，bom 与 docs 模块名称已变更为 bjca-footstone-bpring-security-* 前缀
 	if (!['bjca-footstone-bpring-security-bom', 'bjca-footstone-bpring-security-docs'].contains(project.name)) {
 		apply plugin: 'io.spring.javaformat'
 		apply plugin: 'checkstyle'
@@ -156,6 +163,7 @@ develocity {
 
 nohttp {
 	source.exclude "buildSrc/build/**", "javascript/.gradle/**", "javascript/package-lock.json", "javascript/node_modules/**", "javascript/build/**", "javascript/dist/**"
+	// config 模块在 GAV 重命名后项目名为 bjca-footstone-bpring-security-config
 	source.builtBy(project(':bjca-footstone-bpring-security-config').tasks.withType(RncToXsd))
 }
 

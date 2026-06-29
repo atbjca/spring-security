@@ -12,6 +12,7 @@ dependencies {
 		def reactorVersion = project.property("reactorVersion")
 		def springDataVersion = project.property("springDataVersion")
 		def micrometerVersion = project.property("micrometerVersion")
+		// 覆盖模式：Spring Framework BOM 使用内部 fork 坐标
 		api platform("cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:$springFrameworkVersion")
 		api platform("io.projectreactor:reactor-bom:$reactorVersion")
 		api platform("org.springframework.data:spring-data-bom:$springDataVersion")

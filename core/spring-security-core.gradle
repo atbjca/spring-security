@@ -5,6 +5,49 @@ import java.util.concurrent.Callable
 apply plugin: 'io.spring.convention.spring-module'
 apply plugin: 'kotlin'
 
+// =============================================================================
+// javaTemplates：构建时展开 springSecurityVersion，避免在 Java 源码中硬编码版本号
+// 对齐 spring-boot-2.7 的 SpringBootVersion.java + syncJavaTemplates 模式
+// =============================================================================
+def syncJavaTemplates = tasks.register('syncJavaTemplates', Sync) {
+	from('src/main/javaTemplates')
+	into(layout.buildDirectory.dir('generated-sources/javaTemplates'))
+	def templateProperties = [
+		'springSecurityVersion': findProperty('springSecurityVersion') ?: version
+	]
+	expand(templateProperties)
+	inputs.properties(templateProperties)
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir(syncJavaTemplates)
+		}
+	}
+}
+
+tasks.named('compileJava') {
+	dependsOn(syncJavaTemplates)
+}
+
+tasks.named('compileKotlin') {
+	dependsOn(syncJavaTemplates)
+}
+
+// 格式化检查：排除生成源码（expand 可能改变换行），改为检查模板源文件
+tasks.named('checkFormatMain') {
+	def generatedSources = fileTree(layout.buildDirectory.dir('generated-sources/javaTemplates'))
+	exclude { candidate -> generatedSources.contains(candidate.file) }
+	source(fileTree('src/main/javaTemplates'))
+}
+
+// =============================================================================
+// 依赖坐标说明（GAV 重命名）
+// =============================================================================
+// - 内部模块：project(':bjca-footstone-bpring-security-*')
+// - Spring Framework：cn.bjca.footstone.bpring:bjca-footstone-bpring-*
+//   替代官方 org.springframework:spring-*，Java import 无需修改
 dependencies {
 	management platform(project(":bjca-footstone-bpring-security-dependencies"))
 	api project(':bjca-footstone-bpring-security-crypto')
@@ -44,8 +87,11 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// 将解析到的 Spring Framework 版本写入 META-INF/spring-security.versions，
+// 供 SpringSecurityCoreVersion 在运行时读取最低兼容版本
 task springVersion(type: org.gradle.api.tasks.WriteProperties) {
 	destinationFile = file("${buildDir}/versions/spring-security.versions")
+	// key 使用内部 fork 的 core 模块 GAV，与 SpringSecurityCoreVersion.getSpringVersion() 对应
 	property("cn.bjca.footstone.bpring:bjca-footstone-bpring-core", springVersion())
 }
 
@@ -62,6 +108,7 @@ configure(project.tasks.withType(Test)) {
 	}
 }
 
+// 从 compileClasspath 中解析内部 fork 的 spring-core 构件版本号
 Callable<String> springVersion() {
 	return  (Callable<String>) { project.configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts
     .find { it.name == 'bjca-footstone-bpring-core' }.moduleVersion.id.version }

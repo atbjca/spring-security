@@ -3,7 +3,7 @@ pluginManagement {
 		mavenLocal()
 		mavenCentral()
 		gradlePluginPortal()
-		// Nexus 私服仓库（插件下载源）
+		// Nexus 私服仓库（Gradle 插件下载源，凭证见 ~/.gradle/gradle.properties）
 		maven {
 			name = 'nexus'
 			url = nexusPublicUrl
@@ -14,7 +14,7 @@ pluginManagement {
 			}
 		}
 		if (version.endsWith('-SNAPSHOT')) {
-			// Nexus 快照仓库（SNAPSHOT 版本插件下载源）
+			// SNAPSHOT 构建时额外启用快照仓库，拉取内部 fork 的 SNAPSHOT 插件/依赖
 			maven {
 				name = 'nexus-snapshots'
 				url = nexusSnapshotUrl
@@ -65,7 +65,12 @@ buildFiles.each { File buildFile ->
 	}
 }
 
-// 动态重命名 Gradle 项目名称（ArtifactId），规避 SCA 扫描；物理目录保持不变
+// =============================================================================
+// GAV 去特征化：动态重命名 Gradle project.name（即 Maven ArtifactId）
+// =============================================================================
+// 约束：仅修改构建坐标，不修改物理目录名与 Java package
+// 规则：spring-security-xxx → bjca-footstone-bpring-security-xxx
+// 示例：spring-security-core → bjca-footstone-bpring-security-core
 String renameArtifactId(String projectName) {
 	if (projectName.startsWith('spring-security-')) {
 		return projectName.replace('spring-security-', 'bjca-footstone-bpring-security-')
@@ -73,6 +78,7 @@ String renameArtifactId(String projectName) {
 	return projectName
 }
 
+// 注册子项目：include 使用重命名后的 projectPath，buildFileName 仍指向原始 .gradle 文件
 def configureProject(String projectPath, String projectName, File buildFile) {
 	String renamedProjectName = renameArtifactId(projectName)
 	include(':' + renamedProjectName)

@@ -11,6 +11,7 @@ Spring Security 6.5.11 维护分支——CVE 漏洞评估、Nexus 私服发布�
 | **基础版本** | Spring Security 6.5.11（origin/6.5.x） |
 | **工作分支** | `6.5.x-bjca-patch` |
 | **版本号** | `6.5.11-nes.patch.1-SNAPSHOT` |
+| **springSecurityVersion** | `6.5.11`（构建时注入 `SpringSecurityCoreVersion.getVersion()`） |
 | **Group** | `cn.bjca.footstone.bpring.security` |
 | **Spring Framework** | `6.2.19-nes.patch.1-SNAPSHOT`（内部 fork） |
 
