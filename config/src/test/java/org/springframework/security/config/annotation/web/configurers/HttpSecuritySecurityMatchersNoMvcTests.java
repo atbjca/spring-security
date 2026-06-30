@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Marcus Da Coregio
  *
  */
-@ClassPathExclusions("spring-webmvc-*.jar")
+@ClassPathExclusions({ "spring-webmvc-*.jar", "bjca-footstone-bpring-webmvc-*.jar" })
 public class HttpSecuritySecurityMatchersNoMvcTests {
 
 	AnnotationConfigWebApplicationContext context;
