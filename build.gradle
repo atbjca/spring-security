@@ -125,6 +125,11 @@ subprojects {
 		options.compilerArgs.add("-parameters")
 		options.release.set(17)
 	}
+	// XSD 校验等测试断言期望英文错误信息；本机 JVM 默认 zh_CN 时会导致 config 模块误报
+	tasks.withType(Test).configureEach {
+		systemProperty 'user.language', 'en'
+		systemProperty 'user.country', 'US'
+	}
 }
 
 allprojects {

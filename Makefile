@@ -26,6 +26,7 @@ clean:
 	$(JAVA_INIT) ./gradlew clean
 
 # 单元测试：各模块 src/test/ 下的 JUnit 测试，内存 Mock，不依赖外部中间件
+# 注：build.gradle 已为 Test 任务统一设置 user.language=en，避免 XSD 校验中文消息导致断言失败
 test:
 	$(JAVA_INIT) ./gradlew test
 

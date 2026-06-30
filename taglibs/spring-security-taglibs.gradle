@@ -29,5 +29,6 @@ dependencies {
 }
 
 configure(project.tasks.withType(Test)) {
-	systemProperties['springSecurityVersion'] = version
+	// 使用上游基线版本号（6.5.11），勿用带 nes.patch 后缀的发布 version
+	systemProperties['springSecurityVersion'] = findProperty('springSecurityVersion') ?: version
 }

@@ -103,7 +103,8 @@ tasks.processResources {
 
 configure(project.tasks.withType(Test)) {
 	doFirst {
-		systemProperties['springSecurityVersion'] = version
+		// 使用上游基线版本号（6.5.11），勿用带 nes.patch 后缀的发布 version，否则 Serializable 测试目录路径会算错
+		systemProperties['springSecurityVersion'] = findProperty('springSecurityVersion') ?: version
 		systemProperties['springVersion'] = springVersion().call()
 	}
 }

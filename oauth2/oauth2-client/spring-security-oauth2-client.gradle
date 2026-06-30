@@ -24,7 +24,13 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.skyscreamer:jsonassert'
 	testImplementation 'io.r2dbc:r2dbc-h2:1.0.0.RELEASE'
-	testImplementation 'io.r2dbc:r2dbc-spi-test:0.9.1.RELEASE'
+	// r2dbc-spi-test 会传递引入 spring-jdbc/spring-tx 5.2.6；GAV 重命名后 BOM 无法覆盖 org.springframework 坐标，需显式排除
+	testImplementation('io.r2dbc:r2dbc-spi-test:0.9.1.RELEASE') {
+		exclude group: 'org.springframework', module: 'spring-jdbc'
+		exclude group: 'org.springframework', module: 'spring-tx'
+	}
+	// R2dbc 测试需内部 fork 的 r2dbc/tx（optional 仅编译期可见，测试 runtime 需显式声明）
+	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-r2dbc'
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.junit.jupiter:junit-jupiter-api"
 	testImplementation "org.junit.jupiter:junit-jupiter-params"
