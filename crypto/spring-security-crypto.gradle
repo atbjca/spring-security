@@ -3,7 +3,7 @@ apply plugin: 'io.spring.convention.spring-module'
 dependencies {
 	management platform(project(":bjca-footstone-bpring-security-dependencies"))
 	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jcl'
-	optional 'org.bouncycastle:bcpkix-jdk15on'
+	optional 'org.bouncycastle:bcpkix-jdk18on'
 	
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.junit.jupiter:junit-jupiter-api"

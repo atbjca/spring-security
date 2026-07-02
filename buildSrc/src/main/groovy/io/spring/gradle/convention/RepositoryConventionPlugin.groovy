@@ -77,6 +77,11 @@ class RepositoryConventionPlugin implements Plugin<Project> {
 				}
 				content {
 					excludeGroup('net.minidev')
+					// 收窄为只服务 Spring 自家坐标，避免 Bouncy Castle 等普通 GA 依赖被错误路由到该源
+					includeGroupByRegex('org\\.springframework.*')
+					includeGroupByRegex('io\\.spring.*')
+					includeGroupByRegex('io\\.projectreactor.*')
+					includeGroup('spring-io')
 				}
 				url = 'https://repo.spring.io/release/'
 			}

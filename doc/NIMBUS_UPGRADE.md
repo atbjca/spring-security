@@ -119,10 +119,11 @@ make build-thin
 
 ### 6.1 Bouncy Castle 版本偏低（CVE-2025-8916 未修复）
 
-当前项目使用 Bouncy Castle 1.70（`org.bouncycastle:bcpkix-jdk15on` 和 `org.bouncycastle:bcprov-jdk15on`），
-受 CVE-2025-8916 影响。需要单独升级 Bouncy Castle 至 1.79+ 来修复此漏洞。
-此升级涉及不同的依赖链，建议在后续独立任务中处理。
+### 6.1 Bouncy Castle 版本已升级（CVE-2025-8916 已修复）
 
+本项目已将 Bouncy Castle 从 1.70 升级到 1.79（CVE-2025-8916 修复版本），升级变更在
+`upgrade-bouncycastle-for-cve-2025-8916` 变更中执行，详情见 `doc/CVE/CVE-2025-8916.md`。
+`crypto` / `saml2` / `oauth2-jose` 的回归兼容性由人工在可跑 Gradle 的主机上验证。
 ### 6.2 nimbus-jose-jwt 旧 API 已弃用但仍可用
 
 以下类在 nimbus-jose-jwt 10.8 中仍然存在（可能已标记为 `@Deprecated`），但未来版本可能移除：

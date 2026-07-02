@@ -193,6 +193,22 @@ allprojects {
 	}
 }
 
+subprojects {
+	configurations.all {
+		resolutionStrategy.eachDependency { details ->
+			def req = details.requested
+			if (req.group == 'org.bouncycastle') {
+				// BC 1.79 只发布 jdk18on 变体，将所有 jdk15on 请求替换为 jdk18on
+				if (req.name.contains('jdk15on')) {
+					details.useTarget group: req.group, name: req.name.replace('jdk15on', 'jdk18on'), version: '1.79'
+				} else {
+					details.useVersion '1.79'
+				}
+			}
+		}
+	}
+}
+
 develocity {
 	buildScan {
 		termsOfUseUrl = 'https://gradle.com/help/legal-terms-of-use'

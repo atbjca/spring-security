@@ -26,8 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.core.SpringVersion;
 
 /**
- * Internal class used for checking version compatibility in a deployed
- * application.
+ * Internal class used for checking version compatibility in a deployed application.
  *
  * @author Luke Taylor
  * @author Rob Winch
@@ -41,8 +40,7 @@ public final class SpringSecurityCoreVersion {
 	/**
 	 * Global Serialization value for Spring Security classes.
 	 *
-	 * N.B. Classes are not intended to be serializable between different versions.
-	 * See
+	 * N.B. Classes are not intended to be serializable between different versions. See
 	 * SEC-1709 for why we still need a serial version.
 	 */
 	public static final long SERIAL_VERSION_UID = 580L;
@@ -62,7 +60,6 @@ public final class SpringSecurityCoreVersion {
 
 	/**
 	 * Perform version checks with specific min Spring Version
-	 * 
 	 * @param minSpringVersion
 	 */
 	private static void performVersionChecks(String minSpringVersion) {
@@ -89,10 +86,8 @@ public final class SpringSecurityCoreVersion {
 	}
 
 	/**
-	 * Disable if springVersion and springSecurityVersion are the same to allow
-	 * working
+	 * Disable if springVersion and springSecurityVersion are the same to allow working
 	 * with Uber Jars.
-	 * 
 	 * @param springVersion
 	 * @param springSecurityVersion
 	 * @return
@@ -106,15 +101,15 @@ public final class SpringSecurityCoreVersion {
 
 	/**
 	 * Loads the spring version or null if it cannot be found.
-	 * 
 	 * @return
 	 */
 	private static String getSpringVersion() {
 		Properties properties = new Properties();
 		try (InputStream is = SpringSecurityCoreVersion.class.getClassLoader()
-				.getResourceAsStream("META-INF/spring-security.versions")) {
+			.getResourceAsStream("META-INF/spring-security.versions")) {
 			properties.load(is);
-		} catch (IOException | NullPointerException ex) {
+		}
+		catch (IOException | NullPointerException ex) {
 			return null;
 		}
 		return properties.getProperty("cn.bjca.footstone.bpring:bjca-footstone-bpring-core");

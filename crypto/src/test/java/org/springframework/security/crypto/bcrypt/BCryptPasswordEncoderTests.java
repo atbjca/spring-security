@@ -225,8 +225,7 @@ public class BCryptPasswordEncoderTests {
 	// === CVE-2025-22228 修复验证测试 ===
 
 	/**
-	 * 测试 72 字节密码可以正常编码和验证
-	 * 72 字节是 BCrypt 算法的最大有效密码长度
+	 * 测试 72 字节密码可以正常编码和验证 72 字节是 BCrypt 算法的最大有效密码长度
 	 */
 	@Test
 	public void encodeWhenPasswordIs72BytesThenSuccess() {
@@ -250,8 +249,8 @@ public class BCryptPasswordEncoderTests {
 	}
 
 	/**
-	 * 测试超过 72 字节的密码在验证时不抛出异常（CVE-2025-22234 回归修复）
-	 * matches() 路径必须正常执行，以保持 DaoAuthenticationProvider 的时序攻击防护
+	 * 测试超过 72 字节的密码在验证时不抛出异常（CVE-2025-22234 回归修复） matches() 路径必须正常执行，以保持
+	 * DaoAuthenticationProvider 的时序攻击防护
 	 */
 	@Test
 	public void matchesWhenPasswordExceeds72BytesThenDoesNotThrowException() {
@@ -265,8 +264,7 @@ public class BCryptPasswordEncoderTests {
 	}
 
 	/**
-	 * 测试多字节字符密码的字节长度边界
-	 * 中文字符在 UTF-8 编码下占 3 字节，24 个中文字符 = 72 字节
+	 * 测试多字节字符密码的字节长度边界 中文字符在 UTF-8 编码下占 3 字节，24 个中文字符 = 72 字节
 	 */
 	@Test
 	public void encodeWhenMultiBytePasswordExceeds72BytesThenThrowsException() {
@@ -277,8 +275,7 @@ public class BCryptPasswordEncoderTests {
 	}
 
 	/**
-	 * 测试前 72 字节相同的超长密码在 matches 中仍然可以匹配
-	 * 这验证了 matches 路径的 for_check 行为
+	 * 测试前 72 字节相同的超长密码在 matches 中仍然可以匹配 这验证了 matches 路径的 for_check 行为
 	 */
 	@Test
 	public void matchesWhenLongPasswordSharesFirst72BytesThenMatches() {

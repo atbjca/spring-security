@@ -161,7 +161,8 @@ public final class ClientRegistrations {
 		return () -> {
 			RequestEntity<Void> request = RequestEntity.get(uri).build();
 			Map<String, Object> configuration = rest.exchange(request, typeReference).getBody();
-			// oauth2-oidc-sdk 11.x 中 OIDCProviderMetadata.parse() 在缺少 jwks_uri 时抛出 ParseException，
+			// oauth2-oidc-sdk 11.x 中 OIDCProviderMetadata.parse() 在缺少 jwks_uri 时抛出
+			// ParseException，
 			// 而非 IllegalArgumentException；在调用 parse 之前手动校验，保持原有异常类型不变
 			Assert.notNull(configuration.get("jwks_uri"), "The public JWK set URI must not be null");
 			OIDCProviderMetadata metadata = parse(configuration, OIDCProviderMetadata::parse);
