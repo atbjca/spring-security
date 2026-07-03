@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.Advisor;
@@ -210,6 +211,10 @@ public class GlobalMethodSecurityBeanDefinitionParserTests {
 	}
 
 	// SEC-936
+	// 定制的 bjca-footstone-bpring-web 已移除 org.springframework.remoting.httpinvoker 包，
+	// HttpInvokerProxyFactoryBean 不再存在，测试运行时会抛出 ClassNotFoundException。
+	// 保留原始测试代码以便将来上游对齐时参考。
+	@Disabled("HttpInvokerProxyFactoryBean 已在定制的 bjca-footstone-bpring-web 中移除")
 	@Test
 	public void worksWithoutTargetOrClass() {
 		// @formatter:off

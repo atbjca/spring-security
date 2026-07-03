@@ -154,20 +154,31 @@ compileTestJava {
 }
 
 task compileSaml2TestJava(type: JavaCompile) {
+	dependsOn compileTestJava
 	javaCompiler = javaToolchains.compilerFor {
 		languageVersion = JavaLanguageVersion.of(11)
 	}
 	source = sourceSets.test.java.srcDirs
 	include "org/springframework/security/config/annotation/web/configurers/saml2/**", "org/springframework/security/config/http/Saml2*"
-	classpath = sourceSets.test.compileClasspath
-	destinationDirectory = new File("${buildDir}/classes/java/test")
-	options.sourcepath = sourceSets.test.java.getSourceDirectories()
+	classpath = sourceSets.test.compileClasspath + files(compileTestJava.destinationDirectory)
+	destinationDirectory = new File("${buildDir}/classes/java/saml2Test")
 }
+
+// Register the isolated SAML2 test output as part of the test source set output. This makes
+// testJar package the SAML2 test classes, and gives every consumer of sourceSets.test.output
+// (testJar, test, checkstyleTest, checkstyleIntegrationTest, compileIntegrationTestJava) an
+// implicit build dependency on compileSaml2TestJava via builtBy, avoiding the output-directory
+// race that previously left the config test jar incomplete under parallel builds.
+sourceSets.test.output.dir(compileSaml2TestJava.destinationDirectory, builtBy: compileSaml2TestJava)
 
 task saml2Tests(type: Test) {
 	javaLauncher = javaToolchains.launcherFor {
 		languageVersion = JavaLanguageVersion.of(11)
 	}
+	// output.dir(...) extras are not part of sourceSets.test.output.classesDirs, so point the
+	// task at the isolated SAML2 output directory explicitly; the runtime classpath already
+	// includes it via sourceSets.test.runtimeClasspath.
+	testClassesDirs = files(compileSaml2TestJava.destinationDirectory)
 	filter {
 		includeTestsMatching "org.springframework.security.config.annotation.web.configurers.saml2.*"
 	}
