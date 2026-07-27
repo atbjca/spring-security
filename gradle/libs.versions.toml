@@ -15,9 +15,8 @@ org-mockito = "4.8.1"
 org-opensaml4 = "4.1.0"
 org-opensaml3 = "3.4.6"
 org-slf4j = "1.7.36"
-# 内部 Spring Framework fork 实际发布版本（私服路径为 -nes.patch.1-SNAPSHOT/，不含 5.3.39 前缀）
-# 这是因为 Spring Framework fork 构建时版本配置有误，后续需重新发布正确版本 5.3.39-nes.patch.1-SNAPSHOT
-org-springframework = "5.3.39-nes.patch.1-SNAPSHOT"
+# Internal Spring Framework RELEASE verified in the NES release train.
+org-springframework = "5.3.39-nes.patch.1"
 
 
 [libraries]

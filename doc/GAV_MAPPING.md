@@ -5,7 +5,7 @@
 ## 1. 全局变更规则
 - **GroupId**: `org.springframework.security` -> `cn.bjca.footstone.bpring.security`
 - **ArtifactId**: `spring-security-xxx` -> `bjca-footstone-bpring-security-xxx`
-- **Version**: `5.8.16` -> `5.8.16-nes.patch.1-SNAPSHOT`
+- **Version**: `5.8.16` -> `5.8.16-nes.patch.1`
 
 ## 2. 详细模块映射
 
@@ -33,8 +33,8 @@
 
 | 原始坐标 | 推荐新坐标 |
 | :--- | :--- |
-| org.springframework:spring-framework-bom:5.3.39 | cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:5.3.39-nes.patch.1-SNAPSHOT |
-| org.springframework:spring-xxx:5.3.39 | cn.bjca.footstone.bpring:bjca-footstone-bpring-xxx:5.3.39-nes.patch.1-SNAPSHOT |
+| org.springframework:spring-framework-bom:5.3.39 | cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:5.3.39-nes.patch.1 |
+| org.springframework:spring-xxx:5.3.39 | cn.bjca.footstone.bpring:bjca-footstone-bpring-xxx:5.3.39-nes.patch.1 |
 
 > [!TIP]
 > 使用新坐标后，原有 Java 代码中的 `import org.springframework.security...` 无需任何修改即可直接运行。

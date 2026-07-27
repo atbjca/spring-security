@@ -9,6 +9,19 @@ image:https://img.shields.io/badge/Revved%20up%20by-Gradle%20Enterprise-06A0CE?l
 Spring Security provides security services for the https://docs.spring.io[Spring IO Platform]. Spring Security 5.0 requires Spring 5.0 as
 a minimum and also requires Java 8.
 
+== NES RELEASE
+
+This branch publishes `5.8.16-nes.patch.1` to the internal Nexus RELEASE repository.
+The representative coordinate is
+`cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-core:5.8.16-nes.patch.1`.
+It depends on the verified Spring Framework RELEASE
+`cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:5.3.39-nes.patch.1`.
+
+Release validation uses `make build`, the approved relevant Gradle tests, and
+`make install` followed by generated POM scanning and a local consumer smoke test.
+Deployment uses `make deploy` only after the complete publication set is confirmed
+absent from the Nexus RELEASE repository. This release has no approved publication exclusions.
+
 For a detailed list of features and access to the latest release, please visit https://spring.io/projects[Spring projects].
 
 == Code of Conduct
