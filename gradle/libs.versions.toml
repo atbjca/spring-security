@@ -15,9 +15,9 @@ org-jetbrains-kotlinx = "1.10.2"
 org-mockito = "5.17.0"
 org-opensaml = "4.3.2"
 org-opensaml5 = "5.1.2"
-# 内部 Spring Framework fork 实际发布版本（私服路径：6.2.19-nes.patch.1-SNAPSHOT）
+# 内部 Spring Framework fork RELEASE 版本（私服路径：6.2.19-nes.patch.1）
 # 替代官方 org.springframework:spring-framework-bom:6.2.19
-org-springframework = "6.2.19-nes.patch.1-SNAPSHOT"
+org-springframework = "6.2.19-nes.patch.1"
 
 [libraries]
 ch-qos-logback-logback-classic = "ch.qos.logback:logback-classic:1.5.34"

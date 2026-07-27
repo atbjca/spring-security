@@ -12,10 +12,17 @@
 
 | 项 | 值 |
 |---|---|
-| 发布版本 | `6.5.11-nes.patch.1-SNAPSHOT` |
+| 发布版本 | `6.5.11-nes.patch.1` |
 | GroupId | `cn.bjca.footstone.bpring.security` |
 | 运行时展示版本 | `6.5.11`（`gradle.properties` 的 `springSecurityVersion`，构建时注入 `getVersion()`） |
-| Spring Framework | `6.2.19-nes.patch.1-SNAPSHOT`（内部 fork） |
+| Spring Framework | `6.2.19-nes.patch.1`（已发布的内部 RELEASE） |
+
+代表性坐标为
+`cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-core:6.5.11-nes.patch.1`；
+下游应优先导入
+`cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-bom:6.5.11-nes.patch.1`。
+完整坐标转换见 `doc/GAV_MAPPING.md`。Maven 坐标的重命名不改变
+`org.springframework.security` Java package。
 
 ## 3. Makefile 命令参考
 
@@ -29,6 +36,16 @@
 | `make install` | 发布到 `~/.m2/repository` |
 | `make deploy` | 发布到 Nexus 私服 |
 | `make stop` | 停止 Gradle Daemon |
+
+RELEASE 流程严格按依赖拓扑执行：先验证 Spring Framework RELEASE，再复用未被
+源码/测试变更失效的开发 build/test 证据，无 `clean` 地执行
+`publishToMavenLocal -x test`、生成 POM/BOM 的内部 SNAPSHOT 扫描及
+RELEASE-only 消费验证。只有这些门禁全部通过后才允许执行一次 Nexus 部署。
+本版本没有显式发布排除项。
+
+Nexus 主机为 `192.168.131.36:8088`，RELEASE 仓库名为 `releases`，路径为
+`/repository/releases/`。项目通过 `nexusReleaseUrl` 获取完整地址，凭证只保存在
+用户级 Gradle 配置中。
 
 ## 4. 迁移指南
 

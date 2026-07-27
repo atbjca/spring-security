@@ -6,6 +6,28 @@ image:https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradl
 
 = Spring Security
 
+== NES RELEASE
+
+This branch prepares `cn.bjca.footstone.bpring.security` version
+`6.5.11-nes.patch.1`. Its required internal upstream is the already published
+Spring Framework BOM
+`cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:6.2.19-nes.patch.1`.
+The representative artifact is
+`cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-core:6.5.11-nes.patch.1`.
+
+Use the BOM `bjca-footstone-bpring-security-bom` for downstream dependency
+management. Java package names remain `org.springframework.security`; only
+Maven coordinates are renamed. There are no explicit publication exclusions.
+
+The Nexus RELEASE endpoint is configured by `nexusReleaseUrl`. For this release
+the host is `192.168.131.36:8088`, repository is `releases`, and repository path
+is `/repository/releases/`. Credentials remain in the user-level Gradle
+configuration. Release verification reuses approved development build/test
+evidence when the intervening diff contains no source or test changes. Generate
+the local publications incrementally with `publishToMavenLocal -x test`, inspect
+every generated POM for internal `-SNAPSHOT` versions, and complete a local
+RELEASE-only consumer check before Nexus deployment is authorized.
+
 Spring Security provides security services for the https://docs.spring.io[Spring IO Platform]. Spring Security 6.0 requires Spring 6.0 as
 a minimum and also requires Java 17.
 
