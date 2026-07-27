@@ -1,0 +1,48 @@
+# bouncycastle-upgrade Specification
+
+## Purpose
+Define the fixed Bouncy Castle dependency baseline and the compatibility and documentation evidence required to keep CVE-2025-8916 remediated.
+
+## Requirements
+### Requirement: Bouncy Castle Version Must Be Upgraded Past the CVE-2025-8916 Fix Level
+
+The build configuration MUST resolve `org.bouncycastle:bcpkix-jdk18on` and `org.bouncycastle:bcprov-jdk18on` to a version that includes the CVE-2025-8916 fix.
+
+#### Scenario: Version catalog declares a fixed Bouncy Castle version
+
+- **WHEN** the project version catalog defines the shared Bouncy Castle version
+- **THEN** that version is `1.79` or newer
+- **AND** both `bcpkix-jdk18on` and `bcprov-jdk18on` reference the same shared version source
+
+### Requirement: Dependency Platform Must Export the Upgraded Bouncy Castle Coordinates
+
+The dependency platform MUST continue exporting Bouncy Castle coordinates using the upgraded shared version so downstream modules and consumers resolve the fixed artifacts consistently.
+
+#### Scenario: Dependency constraints are evaluated
+
+- **WHEN** the dependency platform constraints are inspected
+- **THEN** `org.bouncycastle:bcpkix-jdk18on` is present as a managed dependency
+- **AND** `org.bouncycastle:bcprov-jdk18on` is present as a managed dependency
+- **AND** both resolve to the upgraded fixed version
+
+### Requirement: Upgrade Must Preserve Existing Crypto and Certificate Workflows
+
+The repository MUST pass regression validation for the modules that currently depend on Bouncy Castle primitives or certificate-related processing after the version upgrade.
+
+#### Scenario: Regression validation is executed
+
+- **WHEN** the change is implemented
+- **THEN** the relevant `crypto` tests pass
+- **AND** the relevant `saml2` certificate/signature related tests pass
+- **AND** the relevant `oauth2-jose` signing or certificate related tests pass
+
+### Requirement: CVE Disposition Documentation Must Reflect the Upgrade Outcome
+
+Project documentation MUST state whether CVE-2025-8916 remains outstanding or has been fixed by the upgraded Bouncy Castle version.
+
+#### Scenario: Security documentation is reviewed after implementation
+
+- **WHEN** the upgrade is completed
+- **THEN** the CVE documentation states the new Bouncy Castle version
+- **AND** it records that the dependency version is no longer within the affected range
+- **AND** it preserves any relevant notes about actual repository usage versus theoretical exploitability
