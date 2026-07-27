@@ -83,3 +83,41 @@ expression `6.2.19-nes.patch.1`, with no internal SNAPSHOT. A first attempt
 using the `security-data` representative stopped because the unrelated external
 `org.springframework.data:spring-data-commons:3.4.13` was not cached in Maven
 offline mode; no Nexus publication occurred.
+
+## Release commit and Nexus publication
+
+The dedicated release commit is
+`98f4b638701eb38006412e90e327adbbb8b896cb`. It contains only the approved
+version, Framework RELEASE dependency, component documentation, and this
+OpenSpec change. No production source, test source, or unrelated build logic is
+part of the release diff.
+
+Immediately before deploy, all 19 publication POMs and 18 binary paths returned
+HTTP 404 from Nexus RELEASE. The coordinator then ran exactly once, from the
+release commit:
+
+```text
+JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8 GRADLE_OPTS='-Xmx4g -Dfile.encoding=UTF-8 -Dorg.gradle.workers.max=3' ./gradlew publishAllPublicationsToNexusRepository -x test -PbuildSrc.skipTests=true --max-workers=3
+```
+
+The deploy completed successfully in `30s`: 173 actionable tasks, 62 executed
+and 111 up-to-date. It did not run `clean` or project tests.
+
+Post-deploy verification downloaded every one of the 19 remote POMs and all 18
+expected JARs. All assets were valid and every remote POM had zero internal
+SNAPSHOT findings. The representative core checksums are:
+
+- POM: `3a9829677f355d94da6f2f6f7ccb1ed5406fe0ddf808273973389423320d7ace`
+- JAR: `8a9513f7ad21b8615e1f8b2fe7341741460540dfded73a9cb8aa83a7c65702eb`
+
+An isolated Maven repository then resolved the core artifact only from Nexus
+repositories with snapshots disabled. The dependency tree completed in
+`24.450s` and resolved Security core/crypto `6.5.11-nes.patch.1` plus Framework
+AOP, beans, context, core, JCL, and expression `6.2.19-nes.patch.1`. No artifact
+was taken from the user's normal local Maven repository.
+
+Annotated tag `v6.5.11-nes.patch.1` was created locally. Tag object
+`8d93c716af84b9f57bb0a34f5d57460864a72f5f` peels exactly to the release
+commit. GitHub commit/tag push and remote verification remain pending because
+the known `github.com:443` connectivity blocker persists; Nexus must not be
+redeployed when the Git operation is retried.
