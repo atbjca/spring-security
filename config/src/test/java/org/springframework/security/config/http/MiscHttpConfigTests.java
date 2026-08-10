@@ -376,6 +376,16 @@ public class MiscHttpConfigTests {
 	}
 
 	@Test
+	public void getWhenUsingX509DefaultThenExtractsStructuredCn() throws Exception {
+		this.spring.configLocations(xml("X509Default")).autowire();
+		RequestPostProcessor x509 = x509("classpath:rod.cer");
+		// @formatter:off
+		this.mvc.perform(get("/protected").with(x509))
+				.andExpect(status().isOk());
+		// @formatter:on
+	}
+
+	@Test
 	public void getWhenUsingX509AndPropertyPlaceholderThenSubjectPrincipalRegexIsConfigured() throws Exception {
 		System.setProperty("subject_principal_regex", "OU=(.*?)(?:,|$)");
 		this.spring.configLocations(xml("X509")).autowire();
