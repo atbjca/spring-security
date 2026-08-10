@@ -84,6 +84,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link OpenSamlAuthenticationProvider}
@@ -168,6 +169,40 @@ public class OpenSamlAuthenticationProviderTests {
 		assertThatExceptionOfType(Saml2AuthenticationException.class)
 			.isThrownBy(() -> this.provider.authenticate(token))
 			.satisfies(errorOf(Saml2ErrorCodes.INVALID_SIGNATURE));
+	}
+
+	@Test
+	public void authenticateWhenResponseSignatureInvalidThenDoesNotDecrypt() {
+		Response response = response();
+		response.getEncryptedAssertions().add(new EncryptedAssertionBuilder().buildObject());
+		TestOpenSamlObjects.signed(response, TestSaml2X509Credentials.relyingPartyDecryptingCredential(),
+				RELYING_PARTY_ENTITY_ID);
+		Consumer<OpenSamlAuthenticationProvider.ResponseToken> responseDecrypter = mock(Consumer.class);
+		this.provider.setResponseElementsDecrypter(responseDecrypter);
+		Saml2AuthenticationToken token = token(response, verifying(registration()));
+		assertThatExceptionOfType(Saml2AuthenticationException.class)
+			.isThrownBy(() -> this.provider.authenticate(token))
+			.satisfies(errorOf(Saml2ErrorCodes.INVALID_SIGNATURE));
+		verifyNoInteractions(responseDecrypter);
+	}
+
+	@Test
+	public void authenticateWhenAssertionSignatureInvalidThenDoesNotDecryptOrValidateAssertion() {
+		Response response = response();
+		Assertion assertion = assertion();
+		TestOpenSamlObjects.signed(assertion, TestSaml2X509Credentials.relyingPartyDecryptingCredential(),
+				RELYING_PARTY_ENTITY_ID);
+		response.getAssertions().add(assertion);
+		Consumer<OpenSamlAuthenticationProvider.AssertionToken> assertionDecrypter = mock(Consumer.class);
+		Converter<OpenSamlAuthenticationProvider.AssertionToken, Saml2ResponseValidatorResult> assertionValidator = mock(
+				Converter.class);
+		this.provider.setAssertionElementsDecrypter(assertionDecrypter);
+		this.provider.setAssertionValidator(assertionValidator);
+		Saml2AuthenticationToken token = token(response, verifying(registration()));
+		assertThatExceptionOfType(Saml2AuthenticationException.class)
+			.isThrownBy(() -> this.provider.authenticate(token))
+			.satisfies(errorOf(Saml2ErrorCodes.INVALID_SIGNATURE));
+		verifyNoInteractions(assertionDecrypter, assertionValidator);
 	}
 
 	@Test
@@ -351,7 +386,7 @@ public class OpenSamlAuthenticationProviderTests {
 		response.getEncryptedAssertions().add(encryptedAssertion);
 		TestOpenSamlObjects.signed(response, TestSaml2X509Credentials.assertingPartySigningCredential(),
 				RELYING_PARTY_ENTITY_ID);
-		Saml2AuthenticationToken token = token(response, registration()
+		Saml2AuthenticationToken token = token(response, verifying(registration())
 			.decryptionX509Credentials((c) -> c.add(TestSaml2X509Credentials.assertingPartyPrivateCredential())));
 		assertThatExceptionOfType(Saml2AuthenticationException.class)
 			.isThrownBy(() -> this.provider.authenticate(token))

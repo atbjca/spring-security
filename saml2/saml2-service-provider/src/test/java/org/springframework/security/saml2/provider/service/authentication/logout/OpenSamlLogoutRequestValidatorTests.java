@@ -16,8 +16,10 @@
 
 package org.springframework.security.saml2.provider.service.authentication.logout;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,8 @@ import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.saml2.core.LogoutRequest;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.saml2.Saml2Exception;
+import org.springframework.security.saml2.core.Saml2Error;
 import org.springframework.security.saml2.core.Saml2ErrorCodes;
 import org.springframework.security.saml2.core.Saml2ParameterNames;
 import org.springframework.security.saml2.core.TestSaml2X509Credentials;
@@ -38,6 +42,7 @@ import org.springframework.security.saml2.provider.service.registration.Saml2Mes
 import org.springframework.security.saml2.provider.service.registration.TestRelyingPartyRegistrations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link OpenSamlLogoutRequestValidator}
@@ -45,6 +50,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Josh Cummings
  */
 public class OpenSamlLogoutRequestValidatorTests {
+
+	private static final int MAX_INFLATED_SIZE = 1024 * 1024;
 
 	private final OpenSamlLogoutRequestValidator manager = new OpenSamlLogoutRequestValidator();
 
@@ -85,6 +92,37 @@ public class OpenSamlLogoutRequestValidatorTests {
 				registration, authentication(registration));
 		Saml2LogoutValidatorResult result = this.manager.validate(parameters);
 		assertThat(result.hasErrors()).isFalse();
+	}
+
+	@Test
+	public void handleWhenRedirectPayloadExceedsInflateLimitThenFails() {
+		RelyingPartyRegistration registration = registration().build();
+		String encoded = Saml2Utils.samlEncode(Saml2Utils.samlDeflate(repeat('a', MAX_INFLATED_SIZE + 1)));
+		Saml2LogoutRequest request = Saml2LogoutRequest.withRelyingPartyRegistration(registration)
+			.samlRequest(encoded)
+			.binding(Saml2MessageBinding.REDIRECT)
+			.build();
+		Saml2LogoutRequestValidatorParameters parameters = new Saml2LogoutRequestValidatorParameters(request,
+				registration, authentication(registration));
+		assertThatExceptionOfType(Saml2Exception.class).isThrownBy(() -> this.manager.validate(parameters))
+			.withCauseInstanceOf(IOException.class)
+			.withStackTraceContaining("SAML payload exceeded maximum size of " + MAX_INFLATED_SIZE);
+	}
+
+	@Test
+	public void handleWhenSignatureVerificationFailsThenDoesNotValidateRequestFurther() {
+		RelyingPartyRegistration registration = registration().build();
+		LogoutRequest logoutRequest = TestOpenSamlObjects.assertingPartyLogoutRequest(registration);
+		sign(logoutRequest, registration);
+		logoutRequest.getIssuer().setValue("https://other-asserting-party.example");
+		logoutRequest.setDestination("https://wrong-destination.example");
+		logoutRequest.getNameID().setValue("someone-else");
+		Saml2LogoutRequest request = post(logoutRequest, registration);
+		Saml2LogoutRequestValidatorParameters parameters = new Saml2LogoutRequestValidatorParameters(request,
+				registration, authentication(registration));
+		Saml2LogoutValidatorResult result = this.manager.validate(parameters);
+		assertThat(result.getErrors()).extracting(Saml2Error::getErrorCode)
+			.containsOnly(Saml2ErrorCodes.INVALID_SIGNATURE);
 	}
 
 	@Test
@@ -215,6 +253,12 @@ public class OpenSamlLogoutRequestValidatorTests {
 
 	private String serialize(XMLObject object) {
 		return OpenSamlSigningUtils.serialize(object);
+	}
+
+	private String repeat(char value, int size) {
+		char[] payload = new char[size];
+		Arrays.fill(payload, value);
+		return new String(payload);
 	}
 
 }

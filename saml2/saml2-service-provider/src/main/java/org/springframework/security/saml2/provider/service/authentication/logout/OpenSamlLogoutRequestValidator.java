@@ -18,6 +18,7 @@ package org.springframework.security.saml2.provider.service.authentication.logou
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -79,10 +80,14 @@ public final class OpenSamlLogoutRequestValidator implements Saml2LogoutRequestV
 		Authentication authentication = parameters.getAuthentication();
 		byte[] b = Saml2Utils.samlDecode(request.getSamlRequest());
 		LogoutRequest logoutRequest = parse(inflateIfRequired(request, b));
-		return Saml2LogoutValidatorResult.withErrors()
-			.errors(verifySignature(request, logoutRequest, registration))
-			.errors(validateRequest(logoutRequest, registration, authentication))
-			.build();
+		Collection<Saml2Error> errors = new ArrayList<>();
+		verifySignature(request, logoutRequest, registration).accept(errors);
+		if (!errors.isEmpty()) {
+			return Saml2LogoutValidatorResult.withErrors(errors.toArray(new Saml2Error[0])).build();
+		}
+		validateRequest(logoutRequest, registration, authentication).accept(errors);
+		return errors.isEmpty() ? Saml2LogoutValidatorResult.success()
+				: Saml2LogoutValidatorResult.withErrors(errors.toArray(new Saml2Error[0])).build();
 	}
 
 	private String inflateIfRequired(Saml2LogoutRequest request, byte[] b) {

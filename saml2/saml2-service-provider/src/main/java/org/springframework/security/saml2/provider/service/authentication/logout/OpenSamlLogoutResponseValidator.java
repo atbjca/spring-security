@@ -18,6 +18,7 @@ package org.springframework.security.saml2.provider.service.authentication.logou
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -76,11 +77,15 @@ public class OpenSamlLogoutResponseValidator implements Saml2LogoutResponseValid
 		RelyingPartyRegistration registration = parameters.getRelyingPartyRegistration();
 		byte[] b = Saml2Utils.samlDecode(response.getSamlResponse());
 		LogoutResponse logoutResponse = parse(inflateIfRequired(response, b));
-		return Saml2LogoutValidatorResult.withErrors()
-			.errors(verifySignature(response, logoutResponse, registration))
-			.errors(validateRequest(logoutResponse, registration))
-			.errors(validateLogoutRequest(logoutResponse, request.getId()))
-			.build();
+		Collection<Saml2Error> errors = new ArrayList<>();
+		verifySignature(response, logoutResponse, registration).accept(errors);
+		if (!errors.isEmpty()) {
+			return Saml2LogoutValidatorResult.withErrors(errors.toArray(new Saml2Error[0])).build();
+		}
+		validateRequest(logoutResponse, registration).accept(errors);
+		validateLogoutRequest(logoutResponse, request.getId()).accept(errors);
+		return errors.isEmpty() ? Saml2LogoutValidatorResult.success()
+				: Saml2LogoutValidatorResult.withErrors(errors.toArray(new Saml2Error[0])).build();
 	}
 
 	private String inflateIfRequired(Saml2LogoutResponse response, byte[] b) {
