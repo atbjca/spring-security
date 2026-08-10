@@ -201,12 +201,30 @@ public class Saml2WebSsoAuthenticationRequestFilterTests {
 		given(this.factory.createPostAuthenticationRequest(any())).willReturn(request);
 		this.filter.doFilterInternal(this.request, this.response, this.filterChain);
 		assertThat(this.response.getHeader("Location")).isNull();
-		assertThat(this.response.getContentAsString()).contains(
-				"<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'sha256-oZhLbc2kO8b8oaYLrUc7uye1MgVKMyLtPqWR4WtKF+c='\">")
-			.contains("<script>window.onload = function() { document.forms[0].submit(); }</script>")
-			.contains("<form action=\"https://sso-url.example.com/IDP/SSO\" method=\"post\">")
-			.contains("<input type=\"hidden\" name=\"SAMLRequest\"")
+		assertThat(this.response.getContentAsString()).contains("action=\"https://sso-url.example.com/IDP/SSO\"")
+			.contains("name=\"SAMLRequest\"")
 			.contains("value=\"" + relayStateEncoded + "\"");
+		assertThat(this.response.getHeader("Content-Security-Policy")).matches("script-src 'nonce-.+'");
+	}
+
+	@Test
+	public void doFilterWhenPostAttributesContainHtmlThenEncodesForm() throws Exception {
+		String action = "https://example.com/sso\"><script>alert(1)</script>&path";
+		String value = "request\"><script>alert(2)</script>&value";
+		Saml2PostAuthenticationRequest authenticationRequest = Saml2PostAuthenticationRequest
+			.withRelyingPartyRegistration(TestRelyingPartyRegistrations.relyingPartyRegistration().build())
+			.authenticationRequestUri(action)
+			.samlRequest(value)
+			.relayState(value)
+			.build();
+		Saml2WebSsoAuthenticationRequestFilter filter = new Saml2WebSsoAuthenticationRequestFilter(
+				this.authenticationRequestResolver);
+		filter.setAuthenticationRequestRepository(this.authenticationRequestRepository);
+		given(this.authenticationRequestResolver.resolve(any())).willReturn(authenticationRequest);
+		filter.doFilterInternal(this.request, this.response, this.filterChain);
+		assertThat(this.response.getContentAsString()).doesNotContain("\"><script>")
+			.contains("action=\"https://example.com/sso&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;&amp;path\"")
+			.contains("value=\"request&quot;&gt;&lt;script&gt;alert(2)&lt;/script&gt;&amp;value\"");
 	}
 
 	@Test

@@ -100,9 +100,25 @@ public class Saml2RelyingPartyInitiatedLogoutSuccessHandlerTests {
 		String content = response.getContentAsString();
 		assertThat(content).contains(Saml2ParameterNames.SAML_REQUEST);
 		assertThat(content).contains(registration.getAssertingPartyDetails().getSingleLogoutServiceLocation());
-		assertThat(content).contains(
-				"<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'sha256-oZhLbc2kO8b8oaYLrUc7uye1MgVKMyLtPqWR4WtKF+c='\">");
-		assertThat(content).contains("<script>window.onload = function() { document.forms[0].submit(); }</script>");
+		assertThat(response.getHeader("Content-Security-Policy")).matches("script-src 'nonce-.+'");
+	}
+
+	@Test
+	public void onLogoutSuccessWhenPostAttributesContainHtmlThenEncodesForm() throws Exception {
+		RelyingPartyRegistration registration = TestRelyingPartyRegistrations.full().build();
+		Authentication authentication = authentication(registration);
+		Saml2LogoutRequest logoutRequest = Saml2LogoutRequest.withRelyingPartyRegistration(registration)
+			.location("https://example.com/slo\"><script>alert(1)</script>&path")
+			.samlRequest("request\"><script>alert(2)</script>&value")
+			.binding(Saml2MessageBinding.POST)
+			.build();
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/saml2/logout");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		given(this.logoutRequestResolver.resolve(any(), any())).willReturn(logoutRequest);
+		this.logoutRequestSuccessHandler.onLogoutSuccess(request, response, authentication);
+		assertThat(response.getContentAsString()).doesNotContain("\"><script>")
+			.contains("action=\"https://example.com/slo&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;&amp;path\"")
+			.contains("value=\"request&quot;&gt;&lt;script&gt;alert(2)&lt;/script&gt;&amp;value\"");
 	}
 
 	private Saml2Authentication authentication(RelyingPartyRegistration registration) {

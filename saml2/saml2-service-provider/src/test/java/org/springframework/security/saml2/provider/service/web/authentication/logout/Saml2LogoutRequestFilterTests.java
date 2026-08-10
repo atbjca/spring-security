@@ -120,10 +120,33 @@ public class Saml2LogoutRequestFilterTests {
 		String content = response.getContentAsString();
 		assertThat(content).contains(Saml2ParameterNames.SAML_RESPONSE);
 		assertThat(content).contains(registration.getAssertingPartyDetails().getSingleLogoutServiceResponseLocation());
-		assertThat(content).contains(
-				"<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'sha256-oZhLbc2kO8b8oaYLrUc7uye1MgVKMyLtPqWR4WtKF+c='\">");
-		assertThat(content).contains("<script>window.onload = function() { document.forms[0].submit(); }</script>");
+		assertThat(response.getHeader("Content-Security-Policy")).matches("script-src 'nonce-.+'");
 		verify(this.securityContextHolderStrategy).getContext();
+	}
+
+	@Test
+	public void doFilterWhenPostResponseContainsHtmlThenEncodesForm() throws Exception {
+		RelyingPartyRegistration registration = TestRelyingPartyRegistrations.full()
+			.assertingPartyDetails((party) -> party.singleLogoutServiceBinding(Saml2MessageBinding.POST))
+			.build();
+		Authentication authentication = new TestingAuthenticationToken("user", "password");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/logout/saml2/slo");
+		request.setServletPath("/logout/saml2/slo");
+		request.setParameter(Saml2ParameterNames.SAML_REQUEST, "request");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		given(this.relyingPartyRegistrationResolver.resolve(any(), any())).willReturn(registration);
+		given(this.logoutRequestValidator.validate(any())).willReturn(Saml2LogoutValidatorResult.success());
+		Saml2LogoutResponse logoutResponse = Saml2LogoutResponse.withRelyingPartyRegistration(registration)
+			.location("https://example.com/slo\"><script>alert(1)</script>&path")
+			.samlResponse("response\"><script>alert(2)</script>&value")
+			.binding(Saml2MessageBinding.POST)
+			.build();
+		given(this.logoutResponseResolver.resolve(any(), any())).willReturn(logoutResponse);
+		this.logoutRequestProcessingFilter.doFilterInternal(request, response, new MockFilterChain());
+		assertThat(response.getContentAsString()).doesNotContain("\"><script>")
+			.contains("action=\"https://example.com/slo&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;&amp;path\"")
+			.contains("value=\"response&quot;&gt;&lt;script&gt;alert(2)&lt;/script&gt;&amp;value\"");
 	}
 
 	@Test
