@@ -33,6 +33,7 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.PasswordEncodedUser;
@@ -58,6 +59,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -134,6 +136,39 @@ public class DaoAuthenticationProviderTests {
 		provider.setUserDetailsService(new MockUserDetailsServiceUserPeter());
 		provider.setUserCache(new MockUserCache());
 		assertThatExceptionOfType(DisabledException.class).isThrownBy(() -> provider.authenticate(token));
+	}
+
+	@Test
+	public void authenticateWhenUserDisabledThenPasswordCheckRunsAndOriginalExceptionIsPreserved() {
+		assertAccountStateStillChecksPassword(new User("user", "encoded", false, true, true, true, ROLES_12),
+				DisabledException.class);
+	}
+
+	@Test
+	public void authenticateWhenUserLockedThenPasswordCheckRunsAndOriginalExceptionIsPreserved() {
+		assertAccountStateStillChecksPassword(new User("user", "encoded", true, true, true, false, ROLES_12),
+				LockedException.class);
+	}
+
+	@Test
+	public void authenticateWhenUserExpiredThenPasswordCheckRunsAndOriginalExceptionIsPreserved() {
+		assertAccountStateStillChecksPassword(new User("user", "encoded", true, false, true, true, ROLES_12),
+				AccountExpiredException.class);
+	}
+
+	@Test
+	public void authenticateWhenAlwaysPerformAdditionalChecksDisabledThenPasswordCheckIsSkipped() {
+		PasswordEncoder encoder = mock(PasswordEncoder.class);
+		UserDetailsService users = mock(UserDetailsService.class);
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setPasswordEncoder(encoder);
+		provider.setUserDetailsService(users);
+		provider.setAlwaysPerformAdditionalChecksOnUser(false);
+		given(users.loadUserByUsername("user"))
+			.willReturn(new User("user", "encoded", false, true, true, true, ROLES_12));
+		assertThatExceptionOfType(DisabledException.class).isThrownBy(
+				() -> provider.authenticate(UsernamePasswordAuthenticationToken.unauthenticated("user", "password")));
+		verify(encoder, never()).matches(any(CharSequence.class), anyString());
 	}
 
 	@Test
@@ -500,6 +535,19 @@ public class DaoAuthenticationProviderTests {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 		return provider;
+	}
+
+	private void assertAccountStateStillChecksPassword(UserDetails user,
+			Class<? extends AuthenticationException> exceptionType) {
+		PasswordEncoder encoder = mock(PasswordEncoder.class);
+		UserDetailsService users = mock(UserDetailsService.class);
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setPasswordEncoder(encoder);
+		provider.setUserDetailsService(users);
+		given(users.loadUserByUsername("user")).willReturn(user);
+		assertThatExceptionOfType(exceptionType).isThrownBy(
+				() -> provider.authenticate(UsernamePasswordAuthenticationToken.unauthenticated("user", "password")));
+		verify(encoder).matches("password", "encoded");
 	}
 
 	private class MockUserDetailsServiceReturnsNull implements UserDetailsService {
