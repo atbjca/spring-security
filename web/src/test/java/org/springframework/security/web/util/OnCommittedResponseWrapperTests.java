@@ -30,7 +30,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -1005,6 +1008,58 @@ public class OnCommittedResponseWrapperTests {
 		this.response.addHeader("Content-Length", String.valueOf(String.valueOf(expected).length()));
 		this.response.getWriter().write(expected);
 		assertThat(this.committed).isTrue();
+		verify(this.delegate).addHeader("Content-Length", "4");
+		verify(this.delegate, never()).setContentLength(anyInt());
+		verify(this.delegate, never()).setContentLengthLong(anyLong());
+	}
+
+	@Test
+	public void addIntHeaderContentLengthPrintWriterWriteStringCommits() throws Exception {
+		givenGetWriterThenReturn();
+		int expected = 1234;
+		this.response.addIntHeader("Content-Length", String.valueOf(expected).length());
+		this.response.getWriter().write(expected);
+		assertThat(this.committed).isTrue();
+		verify(this.delegate).addIntHeader("Content-Length", 4);
+		verify(this.delegate, never()).setContentLength(anyInt());
+		verify(this.delegate, never()).setContentLengthLong(anyLong());
+	}
+
+	@Test
+	public void setHeaderContentLengthPrintWriterWriteStringCommits() throws Exception {
+		givenGetWriterThenReturn();
+		int expected = 1234;
+		this.response.setHeader("Content-Length", String.valueOf(String.valueOf(expected).length()));
+		this.response.getWriter().write(expected);
+		assertThat(this.committed).isTrue();
+		verify(this.delegate).setHeader("Content-Length", "4");
+		verify(this.delegate, never()).setContentLength(anyInt());
+		verify(this.delegate, never()).setContentLengthLong(anyLong());
+	}
+
+	@Test
+	public void setIntHeaderContentLengthPrintWriterWriteStringCommits() throws Exception {
+		givenGetWriterThenReturn();
+		int expected = 1234;
+		this.response.setIntHeader("Content-Length", String.valueOf(expected).length());
+		this.response.getWriter().write(expected);
+		assertThat(this.committed).isTrue();
+		verify(this.delegate).setIntHeader("Content-Length", 4);
+		verify(this.delegate, never()).setContentLength(anyInt());
+		verify(this.delegate, never()).setContentLengthLong(anyLong());
+	}
+
+	@Test
+	public void nonContentLengthHeadersDelegateWithoutCommitting() {
+		this.response.addHeader("X-Test", "value");
+		this.response.addIntHeader("X-Int-Test", 1);
+		this.response.setHeader("X-Test", "other");
+		this.response.setIntHeader("X-Int-Test", 2);
+		verify(this.delegate).addHeader("X-Test", "value");
+		verify(this.delegate).addIntHeader("X-Int-Test", 1);
+		verify(this.delegate).setHeader("X-Test", "other");
+		verify(this.delegate).setIntHeader("X-Int-Test", 2);
+		assertThat(this.committed).isFalse();
 	}
 
 	@Test
