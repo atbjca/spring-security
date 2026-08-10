@@ -16,8 +16,10 @@
 
 package org.springframework.security.web.savedrequest;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Locale;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +60,7 @@ public class CookieRequestCache implements RequestCache {
 			this.logger.debug("Request not saved as configured RequestMatcher did not match");
 			return;
 		}
-		String redirectUrl = UrlUtils.buildFullRequestUrl(request);
+		String redirectUrl = buildRelativeRequestUrl(request);
 		Cookie savedCookie = new Cookie(COOKIE_NAME, encodeCookie(redirectUrl));
 		savedCookie.setMaxAge(COOKIE_MAX_AGE);
 		savedCookie.setSecure(request.isSecure());
@@ -74,31 +76,37 @@ public class CookieRequestCache implements RequestCache {
 			return null;
 		}
 		String originalURI = decodeCookie(savedRequestCookie.getValue());
-		if (originalURI == null) {
+		if (!isSafeRelativePath(originalURI)) {
+			this.logger.debug("Did not use saved request since cookie did not contain a safe relative path");
+			removeRequest(request, response);
 			return null;
 		}
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(originalURI).build();
+		UriComponents uriComponents;
+		try {
+			uriComponents = UriComponentsBuilder.fromUriString(originalURI).build();
+		}
+		catch (IllegalArgumentException ex) {
+			this.logger.debug("Did not use malformed saved request cookie", ex);
+			removeRequest(request, response);
+			return null;
+		}
 		DefaultSavedRequest.Builder builder = new DefaultSavedRequest.Builder();
-		int port = getPort(uriComponents);
-		return builder.setScheme(uriComponents.getScheme())
-			.setServerName(uriComponents.getHost())
+		return builder.setScheme(request.getScheme())
+			.setServerName(request.getServerName())
 			.setRequestURI(uriComponents.getPath())
 			.setQueryString(uriComponents.getQuery())
-			.setServerPort(port)
+			.setServerPort(request.getServerPort())
 			.setMethod(request.getMethod())
 			.setLocales(Collections.list(request.getLocales()))
 			.build();
 	}
 
-	private int getPort(UriComponents uriComponents) {
-		int port = uriComponents.getPort();
-		if (port != -1) {
-			return port;
+	private boolean isSafeRelativePath(String uri) {
+		if (uri == null || !uri.startsWith("/") || uri.startsWith("//") || uri.indexOf('\\') != -1) {
+			return false;
 		}
-		if ("https".equalsIgnoreCase(uriComponents.getScheme())) {
-			return 443;
-		}
-		return 80;
+		String lowerCaseUri = uri.toLowerCase(Locale.ROOT);
+		return !lowerCaseUri.startsWith("/%2f") && !lowerCaseUri.contains("%5c");
 	}
 
 	@Override
@@ -123,17 +131,24 @@ public class CookieRequestCache implements RequestCache {
 	}
 
 	private static String encodeCookie(String cookieValue) {
-		return Base64.getEncoder().encodeToString(cookieValue.getBytes());
+		return Base64.getEncoder().encodeToString(cookieValue.getBytes(StandardCharsets.UTF_8));
 	}
 
 	private String decodeCookie(String encodedCookieValue) {
 		try {
-			return new String(Base64.getDecoder().decode(encodedCookieValue.getBytes()));
+			return new String(Base64.getDecoder().decode(encodedCookieValue.getBytes(StandardCharsets.UTF_8)),
+					StandardCharsets.UTF_8);
 		}
 		catch (IllegalArgumentException ex) {
 			this.logger.debug("Failed decode cookie value " + encodedCookieValue);
 			return null;
 		}
+	}
+
+	private static String buildRelativeRequestUrl(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		String query = request.getQueryString();
+		return (query != null) ? uri + "?" + query : uri;
 	}
 
 	private static String getCookiePath(HttpServletRequest request) {

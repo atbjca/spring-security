@@ -17,6 +17,7 @@
 package org.springframework.security.web.server.savedrequest;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
@@ -118,6 +119,26 @@ public class CookieServerRequestCacheTests {
 	}
 
 	@Test
+	public void getRedirectUriWhenCookieContainsAbsoluteUrlThenRejectsAndClearsCookie() {
+		assertInvalidCookieRejectedAndCleared("https://evil.example/phishing");
+	}
+
+	@Test
+	public void getRedirectUriWhenCookieContainsSchemeRelativeUrlThenRejectsAndClearsCookie() {
+		assertInvalidCookieRejectedAndCleared("//evil.example/phishing");
+	}
+
+	@Test
+	public void getRedirectUriWhenCookieContainsBackslashThenRejectsAndClearsCookie() {
+		assertInvalidCookieRejectedAndCleared("/\\\\evil.example/phishing");
+	}
+
+	@Test
+	public void getRedirectUriWhenCookieContainsEncodedBackslashThenRejectsAndClearsCookie() {
+		assertInvalidCookieRejectedAndCleared("/%5cevil.example/phishing");
+	}
+
+	@Test
 	public void getRedirectUriWhenNoCookieThenRedirectUriIsNull() {
 		MockServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.get("/secured/").accept(MediaType.TEXT_HTML));
@@ -136,6 +157,17 @@ public class CookieServerRequestCacheTests {
 		assertThat(cookie).isNotNull();
 		assertThat(cookie.toString()).isEqualTo(
 				"REDIRECT_URI=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax");
+	}
+
+	private void assertInvalidCookieRejectedAndCleared(String value) {
+		String encoded = Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/login")
+			.accept(MediaType.TEXT_HTML)
+			.cookie(new HttpCookie("REDIRECT_URI", encoded)));
+		assertThat(this.cache.getRedirectUri(exchange).block()).isNull();
+		ResponseCookie expired = exchange.getResponse().getCookies().getFirst("REDIRECT_URI");
+		assertThat(expired).isNotNull();
+		assertThat(expired.getMaxAge()).isZero();
 	}
 
 }

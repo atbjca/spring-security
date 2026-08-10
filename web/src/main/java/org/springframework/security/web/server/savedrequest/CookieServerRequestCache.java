@@ -17,9 +17,11 @@
 package org.springframework.security.web.server.savedrequest;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,11 +89,31 @@ public class CookieServerRequestCache implements ServerRequestCache {
 	@Override
 	public Mono<URI> getRedirectUri(ServerWebExchange exchange) {
 		MultiValueMap<String, HttpCookie> cookieMap = exchange.getRequest().getCookies();
-		return Mono.justOrEmpty(cookieMap.getFirst(REDIRECT_URI_COOKIE_NAME))
-			.map(HttpCookie::getValue)
-			.map(CookieServerRequestCache::decodeCookie)
-			.onErrorResume(IllegalArgumentException.class, (ex) -> Mono.empty())
-			.map(URI::create);
+		HttpCookie savedRequestCookie = cookieMap.getFirst(REDIRECT_URI_COOKIE_NAME);
+		if (savedRequestCookie == null) {
+			return Mono.empty();
+		}
+		try {
+			String decoded = decodeCookie(savedRequestCookie.getValue());
+			if (isSafeRelativePath(decoded)) {
+				return Mono.just(URI.create(decoded));
+			}
+		}
+		catch (IllegalArgumentException ex) {
+			logger.debug("Failed to decode saved request cookie", ex);
+		}
+		exchange.getResponse()
+			.getCookies()
+			.add(REDIRECT_URI_COOKIE_NAME, invalidateRedirectUriCookie(exchange.getRequest()));
+		return Mono.empty();
+	}
+
+	private static boolean isSafeRelativePath(String uri) {
+		if (uri == null || !uri.startsWith("/") || uri.startsWith("//") || uri.indexOf('\\') != -1) {
+			return false;
+		}
+		String lowerCaseUri = uri.toLowerCase(Locale.ROOT);
+		return !lowerCaseUri.startsWith("/%2f") && !lowerCaseUri.contains("%5c");
 	}
 
 	@Override
@@ -125,11 +147,12 @@ public class CookieServerRequestCache implements ServerRequestCache {
 	}
 
 	private static String encodeCookie(String cookieValue) {
-		return new String(Base64.getEncoder().encode(cookieValue.getBytes()));
+		return Base64.getEncoder().encodeToString(cookieValue.getBytes(StandardCharsets.UTF_8));
 	}
 
 	private static String decodeCookie(String encodedCookieValue) {
-		return new String(Base64.getDecoder().decode(encodedCookieValue.getBytes()));
+		return new String(Base64.getDecoder().decode(encodedCookieValue.getBytes(StandardCharsets.UTF_8)),
+				StandardCharsets.UTF_8);
 	}
 
 	private static ServerWebExchangeMatcher createDefaultRequestMatcher() {
