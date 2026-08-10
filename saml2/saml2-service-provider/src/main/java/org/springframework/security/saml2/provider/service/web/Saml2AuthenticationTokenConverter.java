@@ -17,6 +17,8 @@
 package org.springframework.security.saml2.provider.service.web;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -142,7 +144,8 @@ public final class Saml2AuthenticationTokenConverter implements AuthenticationCo
 	private String samlInflate(byte[] b) {
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			InflaterOutputStream inflaterOutputStream = new InflaterOutputStream(out, new Inflater(true));
+			InflaterOutputStream inflaterOutputStream = new InflaterOutputStream(new CappedOutputStream(out),
+					new Inflater(true));
 			inflaterOutputStream.write(b);
 			inflaterOutputStream.finish();
 			return out.toString(StandardCharsets.UTF_8.name());
@@ -151,6 +154,40 @@ public final class Saml2AuthenticationTokenConverter implements AuthenticationCo
 			throw new Saml2AuthenticationException(
 					new Saml2Error(Saml2ErrorCodes.INVALID_RESPONSE, "Unable to inflate string"), ex);
 		}
+	}
+
+	private static final class CappedOutputStream extends OutputStream {
+
+		private static final int MAX_SIZE = 1024 * 1024;
+
+		private final OutputStream delegate;
+
+		private int size;
+
+		private CappedOutputStream(OutputStream delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public void write(int b) throws IOException {
+			checkSize(1);
+			this.delegate.write(b);
+			this.size++;
+		}
+
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			checkSize(len);
+			this.delegate.write(b, off, len);
+			this.size += len;
+		}
+
+		private void checkSize(int additionalBytes) throws IOException {
+			if (additionalBytes > MAX_SIZE - this.size) {
+				throw new IOException("SAML payload exceeded maximum size of " + MAX_SIZE);
+			}
+		}
+
 	}
 
 	static class Base64Checker {

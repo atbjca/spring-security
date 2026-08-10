@@ -18,6 +18,7 @@ package org.springframework.security.saml2.provider.service.web;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,6 +53,8 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class Saml2AuthenticationTokenConverterTests {
+
+	private static final int MAX_INFLATED_SIZE = 1024 * 1024;
 
 	@Mock
 	Converter<HttpServletRequest, RelyingPartyRegistration> relyingPartyRegistrationResolver;
@@ -139,6 +142,29 @@ public class Saml2AuthenticationTokenConverterTests {
 		assertThat(token.getSaml2Response()).isEqualTo("response");
 		assertThat(token.getRelyingPartyRegistration().getRegistrationId())
 			.isEqualTo(this.relyingPartyRegistration.getRegistrationId());
+	}
+
+	@Test
+	public void convertWhenGetRequestPayloadIsAtLimitThenInflates() {
+		Saml2AuthenticationTokenConverter converter = new Saml2AuthenticationTokenConverter(
+				this.relyingPartyRegistrationResolver);
+		given(this.relyingPartyRegistrationResolver.convert(any(HttpServletRequest.class)))
+			.willReturn(this.relyingPartyRegistration);
+		MockHttpServletRequest request = getRequestWithDeflatedResponse(repeat('a', MAX_INFLATED_SIZE));
+		Saml2AuthenticationToken token = converter.convert(request);
+		assertThat(token.getSaml2Response()).hasSize(MAX_INFLATED_SIZE);
+	}
+
+	@Test
+	public void convertWhenGetRequestPayloadExceedsLimitThenSaml2AuthenticationException() {
+		Saml2AuthenticationTokenConverter converter = new Saml2AuthenticationTokenConverter(
+				this.relyingPartyRegistrationResolver);
+		given(this.relyingPartyRegistrationResolver.convert(any(HttpServletRequest.class)))
+			.willReturn(this.relyingPartyRegistration);
+		MockHttpServletRequest request = getRequestWithDeflatedResponse(repeat('a', MAX_INFLATED_SIZE + 1));
+		assertThatExceptionOfType(Saml2AuthenticationException.class).isThrownBy(() -> converter.convert(request))
+			.withCauseInstanceOf(IOException.class)
+			.withStackTraceContaining("SAML payload exceeded maximum size of " + MAX_INFLATED_SIZE);
 	}
 
 	@Test
@@ -237,6 +263,20 @@ public class Saml2AuthenticationTokenConverterTests {
 		assertThat(xml).contains("InResponseTo=\"ARQ9a73ead-7dcf-45a8-89eb-26f3c9900c36\"")
 			.contains(" ID=\"s246d157446618e90e43fb79bdd4d9e9e19cf2c7c4\"")
 			.contains("<saml:Issuer>https://idp.ssocircle.com</saml:Issuer>");
+	}
+
+	private MockHttpServletRequest getRequestWithDeflatedResponse(String response) {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("GET");
+		request.setParameter(Saml2ParameterNames.SAML_RESPONSE,
+				Saml2Utils.samlEncode(Saml2Utils.samlDeflate(response)));
+		return request;
+	}
+
+	private String repeat(char value, int size) {
+		char[] payload = new char[size];
+		Arrays.fill(payload, value);
+		return new String(payload);
 	}
 
 	private String getSsoCircleEncodedXml() throws IOException {
