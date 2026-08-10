@@ -17,6 +17,10 @@
 | 运行时展示版本 | `6.5.11`（`gradle.properties` 的 `springSecurityVersion`，构建时注入 `getVersion()`） |
 | Spring Framework | `6.2.19-nes.patch.1`（已发布的内部 RELEASE） |
 
+上表记录当前已发布版本。维护分支正在准备
+`6.5.11-nes.patch.2-SNAPSHOT`，该开发版本尚未发布到 Nexus RELEASE；在正式发布
+patch 2 前，下游仍应使用 `6.5.11-nes.patch.1`。
+
 代表性坐标为
 `cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-core:6.5.11-nes.patch.1`；
 下游应优先导入

@@ -10,10 +10,10 @@ Spring Security 6.5.11 维护分支——CVE 漏洞评估、Nexus 私服发布�
 |------|---|
 | **基础版本** | Spring Security 6.5.11（origin/6.5.x） |
 | **工作分支** | `6.5.x-bjca-patch` |
-| **版本号** | `6.5.11-nes.patch.1-SNAPSHOT` |
+| **版本号** | `6.5.11-nes.patch.2-SNAPSHOT`（下一维护版本，尚未发布） |
 | **springSecurityVersion** | `6.5.11`（构建时注入 `SpringSecurityCoreVersion.getVersion()`） |
 | **Group** | `cn.bjca.footstone.bpring.security` |
-| **Spring Framework** | `6.2.19-nes.patch.1-SNAPSHOT`（内部 fork） |
+| **Spring Framework** | `6.2.19-nes.patch.1`（已发布的内部 RELEASE） |
 
 ## CVE 漏洞处置清单
 
@@ -30,7 +30,18 @@ Spring Security 6.5.11 维护分支——CVE 漏洞评估、Nexus 私服发布�
 | CVE-2024-38821 | 9.3 CRITICAL | WebFlux 防火墙 | **基线已修复** | 6.3.x+ 已修 |
 | CVE-2023-52428 | 7.5 HIGH | nimbus-jose-jwt | **基线已覆盖** | 当前 9.37.4 ≥ 9.37.2 |
 | CVE-2025-53864 | 5.8 MEDIUM | nimbus-jose-jwt | **基线已覆盖** | 当前 9.37.4 ≥ 9.37.4 |
-| CVE-2025-8916 | 6.3 MODERATE | Bouncy Castle | **基线已修复** | 当前 BC 1.80.2 ≥ 1.79 |
+| CVE-2025-8916 | 6.3 MODERATE | Bouncy Castle | **基线已修复** | 当前 BC 1.84 ≥ 1.79 |
+| CVE-2026-59889 | HIGH | Jackson Databind | **基线已修复** | Jackson BOM 已从 2.18.8 升级至 2.18.9；仅在特定外部类型/多态反序列化配置下受影响 |
+| CVE-2026-54515 | HIGH | Jackson Databind | **基线已修复** | Jackson BOM 2.18.9 含修复；Spring Security 未发现直接使用受影响 JsonView 配置的代码路径 |
+| Jackson JsonView external-property advisory（CVE 未分配） | — | Jackson Databind | **基线已覆盖** | 通过 BOM 2.18.9 获取上游修复；不将未分配编号的公告误记为 CVE |
+| CVE-2026-41721 | 8.2 HIGH | Spring Data Commons (MapDataBinder) | **基线已修复** | 已切换 NES Spring Data Commons 3.5.13，官方 3.5.12 起修复 |
+| CVE-2026-41716 | 7.5 HIGH | Spring Data Commons (TypeDiscoverer) | **基线已修复** | NES Spring Data Commons 3.5.13 包含有界属性初始化修复 |
+| CVE-2026-41711 | 5.9 MEDIUM | Spring Data Commons (PropertyPath) | **基线已修复** | NES Spring Data Commons 3.5.13 包含统一解析深度限制 |
+| CVE-2026-41695 | HIGH | Spring Data Commons (PersistentPropertyPathFactory) | **基线已修复** | NES Spring Data Commons 3.5.13 使用有界 ConcurrentLruCache |
+| CVE-2026-41848 | LOW | Spring Framework (AntPathMatcher) | **基线已修复** | 清除 Spring Data 传递的官方 spring-core 6.2.15，统一使用 NES 6.2.19 |
+| CVE-2026-41720 | HIGH | Spring LDAP | **基线已修复** | Spring LDAP 3.2.16 升至 3.3.8；保留 Spring Security 空密码拒绝 |
+| CVE-2026-5588 | MODERATE | Bouncy Castle BCPKIX | **基线已修复** | Bouncy Castle 1.84 修复复合签名空序列验证问题 |
+| CVE-2026-0636 | MODERATE | Bouncy Castle Provider | **基线已修复** | Bouncy Castle 1.84 修复 LDAPStoreHelper LDAP 注入 |
 
 ## GAV 重构
 
@@ -38,8 +49,8 @@ Spring Security 6.5.11 维护分支——CVE 漏洞评估、Nexus 私服发布�
 |------|--------|--------|
 | GroupId | `org.springframework.security` | `cn.bjca.footstone.bpring.security` |
 | ArtifactId | `spring-security-*` | `bjca-footstone-bpring-security-*` |
-| Version | `6.5.12-SNAPSHOT` | `6.5.11-nes.patch.1-SNAPSHOT` |
-| Spring Framework BOM | `org.springframework:spring-framework-bom:6.2.19` | `cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:6.2.19-nes.patch.1-SNAPSHOT` |
+| Version | `6.5.12-SNAPSHOT` | `6.5.11-nes.patch.2-SNAPSHOT` |
+| Spring Framework BOM | `org.springframework:spring-framework-bom:6.2.19` | `cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:6.2.19-nes.patch.1` |
 
 详见 `doc/GAV_MAPPING.md`。
 

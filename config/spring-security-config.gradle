@@ -97,7 +97,10 @@ dependencies {
 		exclude group: 'commons-logging', module: 'commons-logging'
 		exclude group: 'io.netty', module: 'netty'
 	}
-	testImplementation 'org.springframework.ldap:spring-ldap-core'
+	testImplementation ('org.springframework.ldap:spring-ldap-core') {
+		exclude group: 'org.springframework'
+		exclude group: 'org.springframework.data'
+	}
 	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-expression'
 	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jdbc'
 	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-orm'
@@ -105,7 +108,10 @@ dependencies {
 	testImplementation 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core-test'
 	testImplementation ('org.springframework.data:spring-data-jpa') {
 		exclude group: 'org.aspectj', module: 'aspectjrt'
+		exclude group: 'org.springframework'
+		exclude group: 'org.springframework.data', module: 'spring-data-commons'
 	}
+	testImplementation libs.cn.bjca.footstone.bpring.data.commons
 	testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core'
 	testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'
 	testImplementation 'io.mockk:mockk'

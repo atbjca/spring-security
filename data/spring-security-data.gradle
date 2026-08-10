@@ -4,7 +4,7 @@ dependencies {
 	management platform(project(":bjca-footstone-bpring-security-dependencies"))
 	api project(':bjca-footstone-bpring-security-core')
 	api 'jakarta.xml.bind:jakarta.xml.bind-api'
-	api 'org.springframework.data:spring-data-commons'
+	api libs.cn.bjca.footstone.bpring.data.commons
 	api 'cn.bjca.footstone.bpring:bjca-footstone-bpring-core'
 	
 	testImplementation "org.assertj:assertj-core"

@@ -8,7 +8,7 @@
 
 ### 1. `gradle.properties`
 - 添加 `projectGroup=cn.bjca.footstone.bpring.security`，定义全局 Group ID
-- 修改 `version=6.5.11-nes.patch.1-SNAPSHOT`
+- 修改 `version=6.5.11-nes.patch.2-SNAPSHOT`
 
 ### 2. `settings.gradle`
 - 在 `pluginManagement.repositories` 中添加 Nexus 私服仓库（公共仓库 + 快照仓库）和 Spring Release 仓库
