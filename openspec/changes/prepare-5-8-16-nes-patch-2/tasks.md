@@ -13,4 +13,4 @@
 
 - [x] 3.1 Run shell syntax, diff, version-reference, and strict OpenSpec validation
 - [x] 3.2 Run `make verify-published-security` and confirm evidence targets patch.2-SNAPSHOT with Java 8 consumers passing
-- [ ] 3.3 Commit the development-version change, rerun the gate from a clean tracked worktree, and archive the completed change
+- [x] 3.3 Commit the development-version change, rerun the gate from a clean tracked worktree, and archive the completed change
