@@ -4,6 +4,7 @@
 # 主项目代码仍通过 Gradle Toolchain 使用 Java 8 编译
 SHELL := /bin/bash
 JAVA_INIT := source "$(HOME)/.sdkman/bin/sdkman-init.sh" && sdk use java 11.0.29-amzn > /dev/null &&
+BUILDSRC_SKIP_TESTS := -PbuildSrc.skipTests=true
 
 # Gradle 本地缓存配置：扫描 ~/dev/gradle-*-zip 并解压到 Wrapper 缓存
 LOCAL_GRADLE_DIR ?= $(HOME)/dev
@@ -26,32 +27,32 @@ help:
 
 # 清理构建产物
 clean:
-	$(JAVA_INIT) ./gradlew clean
+	$(JAVA_INIT) ./gradlew $(BUILDSRC_SKIP_TESTS) clean
 
 # 全量构建（含测试，耗时较长）
 # 注：跳过 integrationTest（Spring Security 命名空间解析测试环境问题）
 # 注：跳过 docs:api（remoting 模块引用了不存在的 Spring API）
 build: clean
-	$(JAVA_INIT) ./gradlew build -x integrationTest -x :bjca-footstone-bpring-security-docs:api -PbuildSrc.skipTests=true
+	$(JAVA_INIT) ./gradlew $(BUILDSRC_SKIP_TESTS) build -x integrationTest -x :bjca-footstone-bpring-security-docs:api
 
 # 快速构建：跳过测试、集成测试、代码格式检查（checkstyle/checkFormat）和文档模块
 # 适用于日常开发验证编译是否通过
 # 注：-x checkstyleNohttp 跳过 nohttp 检查（输入文件在初次构建后才会存在）
 # 注：-x integrationTest 跳过集成测试（-x test 不会自动跳过自定义的 integrationTest 任务）
 build-thin: clean
-	$(JAVA_INIT) ./gradlew build -x test -x integrationTest -x checkstyleMain -x checkstyleTest -x checkFormatMain -x checkFormatTest -x :bjca-footstone-bpring-security-docs:antora -x :bjca-footstone-bpring-security-docs:docs -x javadoc -x checkstyleNohttp -PbuildSrc.skipTests=true
+	$(JAVA_INIT) ./gradlew $(BUILDSRC_SKIP_TESTS) build -x test -x integrationTest -x checkstyleMain -x checkstyleTest -x checkFormatMain -x checkFormatTest -x :bjca-footstone-bpring-security-docs:antora -x :bjca-footstone-bpring-security-docs:docs -x javadoc -x checkstyleNohttp
 
 # 发布到本地 Maven 仓库（~/.m2/repository）
 # 跳过测试，供本地其他项目依赖调试使用
 install:
-	$(JAVA_INIT) ./gradlew clean publishToMavenLocal -x test
+	$(JAVA_INIT) ./gradlew $(BUILDSRC_SKIP_TESTS) clean publishToMavenLocal -x test
 
 # 发布到 Nexus 私服（根据版本号自动选择 snapshot 或 release 仓库）
 # 使用 publishAllPublicationsToNexusRepository 精确指定 Nexus 仓库，避免发布到 OSSRH 等其他仓库
 deploy:
-	$(JAVA_INIT) ./gradlew clean
+	$(JAVA_INIT) ./gradlew $(BUILDSRC_SKIP_TESTS) clean
 	$(MAKE) verify-published-security
-	$(JAVA_INIT) ./gradlew publishAllPublicationsToNexusRepository -x test
+	$(JAVA_INIT) ./gradlew $(BUILDSRC_SKIP_TESTS) publishAllPublicationsToNexusRepository -x test
 
 verify-published-security:
 	$(JAVA_INIT) ./scripts/verify-published-security.sh

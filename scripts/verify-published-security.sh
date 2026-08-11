@@ -70,13 +70,13 @@ JAVA_HOME="${java8_home}" PATH="${java8_home}/bin:${PATH}" mvn -q -f "${maven_co
 	-DoutputFile="${evidence_dir}/maven-dependency-tree.txt"
 
 maven_classpath="$(<"${maven_consumer}/target/classpath.txt")"
-rg -q "/bcpkix-jdk18on/1\.84/" "${maven_consumer}/target/classpath.txt"
-rg -q "/bcprov-jdk18on/1\.84/" "${maven_consumer}/target/classpath.txt"
-rg -q "/guava/32\.0\.1-jre/" "${maven_consumer}/target/classpath.txt"
-rg -q "/xmlsec/2\.2\.6/" "${maven_consumer}/target/classpath.txt"
-rg -q "/woodstox-core/5\.4\.0/" "${maven_consumer}/target/classpath.txt"
-rg -q "/xercesImpl/2\.12\.2/" "${maven_consumer}/target/classpath.txt"
-if rg -q "jdk15on|/velocity/1\.7/|/commons-lang/2\." "${maven_consumer}/target/classpath.txt"; then
+grep -Eq "/bcpkix-jdk18on/1\.84/" "${maven_consumer}/target/classpath.txt"
+grep -Eq "/bcprov-jdk18on/1\.84/" "${maven_consumer}/target/classpath.txt"
+grep -Eq "/guava/32\.0\.1-jre/" "${maven_consumer}/target/classpath.txt"
+grep -Eq "/xmlsec/2\.2\.6/" "${maven_consumer}/target/classpath.txt"
+grep -Eq "/woodstox-core/5\.4\.0/" "${maven_consumer}/target/classpath.txt"
+grep -Eq "/xercesImpl/2\.12\.2/" "${maven_consumer}/target/classpath.txt"
+if grep -Eq "jdk15on|/velocity/1\.7/|/commons-lang/2\." "${maven_consumer}/target/classpath.txt"; then
 	echo "Maven consumer resolved a prohibited legacy dependency" >&2
 	exit 1
 fi
