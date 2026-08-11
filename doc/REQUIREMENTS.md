@@ -10,7 +10,8 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 |------|---|
 | **基础版本** | Spring Security 5.8.16（origin/5.8.x） |
 | **工作分支** | `5.8.x-bjca-patch` |
-| **版本号** | `5.8.16-nes.patch.1` |
+| **当前开发版本** | `5.8.16-nes.patch.2-SNAPSHOT` |
+| **上一正式版本** | `5.8.16-nes.patch.1`（`v5.8.16-nes.patch.1`） |
 | **Group** | `cn.bjca.footstone.bpring.security` |
 
 ## CVE 漏洞修复清单
@@ -94,7 +95,7 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 |------|--------|--------|
 | **GroupId** | `libiao.test.org.springframework.security` | `cn.bjca.footstone.bpring.security` |
 | **ArtifactId 前缀** | `spring-security-` | `bjca-footstone-bpring-security-` |
-| **Version** | `5.8.16-bjca-patch-SNAPSHOT` | `5.8.16-nes.patch.1` |
+| **Version** | `5.8.16-bjca-patch-SNAPSHOT` | `5.8.16-nes.patch.2-SNAPSHOT`（上一正式版为 `5.8.16-nes.patch.1`） |
 | **Spring Framework BOM** | `org.springframework:spring-framework-bom:5.3.39` | `cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom:5.3.39-nes.patch.1` |
 
 ### 4. 文件修改明细
@@ -103,7 +104,7 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 
 | 文件 | 修改内容 |
 |------|---------|
-| `gradle.properties` | `projectGroup` 改为 `cn.bjca.footstone.bpring.security`；RELEASE `version` 为 `5.8.16-nes.patch.1` |
+| `gradle.properties` | `projectGroup` 为 `cn.bjca.footstone.bpring.security`；当前开发 `version` 为 `5.8.16-nes.patch.2-SNAPSHOT` |
 | `gradle/libs.versions.toml` | `org-springframework` 版本为 `5.3.39-nes.patch.1`；`spring-framework-bom` 坐标为 `cn.bjca.footstone.bpring:bjca-footstone-bpring-framework-bom` |
 | `settings.gradle` | 在 `buildFiles.each` 循环中增加动态重命名逻辑——所有 `spring-security-*` 项目名自动替换为 `bjca-footstone-bpring-security-*`，物理目录结构保持不变 |
 | `build.gradle` | 新增禁用 `remoting` 模块的配置（内部 Spring Framework fork 不含 `httpinvoker` 包）；`nohttp` 插件引用的项目名跟随重命名 |

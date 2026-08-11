@@ -11,13 +11,20 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.security.version>5.8.16-nes.patch.1</spring.security.version>
+		<spring.security.version>5.8.16-nes.patch.2-SNAPSHOT</spring.security.version>
 	</properties>
 
 	<repositories>
 		<repository>
 			<id>candidate</id>
 			<url>${candidateRepository}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>maven-local</id>

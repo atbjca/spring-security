@@ -5,8 +5,14 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 candidate_repo="${repo_root}/build/publications/repos"
 candidate_repo_uri="file://${candidate_repo}"
-security_version="5.8.16-nes.patch.1"
+maven_local_repo="${repo_root}/build/published-security/maven-repository"
+security_version="$(awk -F= '$1 == "version" { print substr($0, index($0, "=") + 1); exit }' "${repo_root}/gradle.properties")"
 evidence_dir="${repo_root}/build/reports/published-security"
+
+if [[ ! "${security_version}" =~ ^5\.8\.16-nes\.patch\.[0-9]+(-SNAPSHOT)?$ ]]; then
+	echo "Invalid or missing Spring Security project version: ${security_version:-<empty>}" >&2
+	exit 1
+fi
 
 find_java8_home() {
 	if [[ -n "${JAVA8_HOME:-}" && -x "${JAVA8_HOME}/bin/javac" ]]; then
@@ -26,6 +32,7 @@ find_java8_home() {
 java8_home="$(find_java8_home)"
 
 rm -rf "${candidate_repo}"
+rm -rf "${maven_local_repo}"
 rm -rf "${evidence_dir}"
 mkdir -p "${evidence_dir}"
 
@@ -57,16 +64,22 @@ fi
 
 maven_consumer="${repo_root}/tests/published-security/maven"
 JAVA_HOME="${java8_home}" PATH="${java8_home}/bin:${PATH}" mvn -q -f "${maven_consumer}/pom.xml" \
+	-gs "${maven_consumer}/global-settings.xml" \
 	-s "${maven_consumer}/settings.xml" \
+	-U \
 	-DcandidateRepository="${candidate_repo_uri}" \
-	-Dmaven.repo.local="${candidate_repo}" \
+	-Dspring.security.version="${security_version}" \
+	-Dmaven.repo.local="${maven_local_repo}" \
 	clean package dependency:build-classpath \
 	-Dmdep.outputFile="${maven_consumer}/target/classpath.txt"
 
 JAVA_HOME="${java8_home}" PATH="${java8_home}/bin:${PATH}" mvn -q -f "${maven_consumer}/pom.xml" \
+	-gs "${maven_consumer}/global-settings.xml" \
 	-s "${maven_consumer}/settings.xml" \
+	-U \
 	-DcandidateRepository="${candidate_repo_uri}" \
-	-Dmaven.repo.local="${candidate_repo}" dependency:tree \
+	-Dspring.security.version="${security_version}" \
+	-Dmaven.repo.local="${maven_local_repo}" dependency:tree \
 	-DoutputFile="${evidence_dir}/maven-dependency-tree.txt"
 
 maven_classpath="$(<"${maven_consumer}/target/classpath.txt")"
@@ -86,7 +99,8 @@ JAVA_HOME="${java8_home}" "${java8_home}/bin/java" \
 gradle_consumer="${repo_root}/tests/published-security/gradle"
 JAVA_HOME="${java8_home}" PATH="${java8_home}/bin:${PATH}" "${repo_root}/gradlew" \
 	--no-daemon --no-parallel -p "${gradle_consumer}" \
-	-PcandidateRepository="${candidate_repo}" clean verifySecurityGraph run
+	-PcandidateRepository="${candidate_repo}" \
+	-PsecurityVersion="${security_version}" clean verifySecurityGraph run
 
 cp "${gradle_consumer}/build/security-evidence/runtime-classpath.txt" \
 	"${evidence_dir}/gradle-runtime-classpath.txt"

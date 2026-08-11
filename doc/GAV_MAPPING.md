@@ -5,7 +5,8 @@
 ## 1. 全局变更规则
 - **GroupId**: `org.springframework.security` -> `cn.bjca.footstone.bpring.security`
 - **ArtifactId**: `spring-security-xxx` -> `bjca-footstone-bpring-security-xxx`
-- **Version**: `5.8.16` -> `5.8.16-nes.patch.1`
+- **Current development version**: `5.8.16` -> `5.8.16-nes.patch.2-SNAPSHOT`
+- **Previous immutable release**: `5.8.16-nes.patch.1` (`v5.8.16-nes.patch.1`)
 
 ## 2. 详细模块映射
 

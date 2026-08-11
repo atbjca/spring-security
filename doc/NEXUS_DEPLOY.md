@@ -2,13 +2,13 @@
 
 ## 概述
 
-本项目基于 Spring Security 5.8.x 维护分支（`5.8.x-bjca-patch`），配置了 Nexus 私服作为依赖下载源和构建产物发布目标。当前发布坐标为 `cn.bjca.footstone.bpring.security` / `5.8.16-nes.patch.1`，以区别于官方坐标。发布前必须先通过 Java 8 和消费者依赖安全门禁。
+本项目基于 Spring Security 5.8.x 维护分支（`5.8.x-bjca-patch`），配置了 Nexus 私服作为依赖下载源和构建产物发布目标。当前开发坐标为 `cn.bjca.footstone.bpring.security` / `5.8.16-nes.patch.2-SNAPSHOT`，上一不可变正式版本为 `5.8.16-nes.patch.1`。发布或上传 SNAPSHOT 前必须先通过 Java 8 和消费者依赖安全门禁。
 
 ## 修改文件清单
 
 ### 1. `gradle.properties`
 - `projectGroup=cn.bjca.footstone.bpring.security`，定义全局 Group ID
-- `version=5.8.16-nes.patch.1`
+- `version=5.8.16-nes.patch.2-SNAPSHOT`
 
 ### 2. `settings.gradle`
 - 在 `pluginManagement.repositories` 中添加 Nexus 私服仓库（公共仓库 + 快照仓库）和 Spring Release 仓库
@@ -69,3 +69,4 @@ nexusPassword=<密码>
 - 构建需要 Java 11+（通过 sdkman 管理），Makefile 已自动处理切换
 - 门禁还需要可执行的 Java 8 JDK；可通过 `JAVA8_HOME` 指定，或使用 sdkman 中的 `8.*` 安装
 - `make deploy` 的候选验证失败时会在上传 Nexus 前退出
+- SNAPSHOT 版本只进入 Nexus snapshot 仓库；正式发布 patch.2 前必须通过独立 release change 将版本冻结为 `5.8.16-nes.patch.2`

@@ -26,7 +26,8 @@ repositories {
 	maven { url = uri('https://build.shibboleth.net/nexus/content/repositories/releases/') }
 }
 
-def securityVersion = '5.8.16-nes.patch.1'
+def securityVersion = providers.gradleProperty('securityVersion')
+	.orElse('5.8.16-nes.patch.2-SNAPSHOT').get()
 
 dependencies {
 	implementation platform("cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-dependencies:${securityVersion}")
