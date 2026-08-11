@@ -34,6 +34,16 @@ mkdir -p "${evidence_dir}"
 	"${java8_home}/bin/java" -version 2>&1
 } > "${evidence_dir}/java8-runtime.txt"
 
+if git -C "${repo_root}" diff --quiet && git -C "${repo_root}" diff --cached --quiet; then
+	tracked_worktree=clean
+else
+	tracked_worktree=modified
+fi
+{
+	echo "source.commit=$(git -C "${repo_root}" rev-parse HEAD)"
+	echo "source.trackedWorktree=${tracked_worktree}"
+} > "${evidence_dir}/source-state.txt"
+
 "${repo_root}/gradlew" --no-daemon --no-parallel -PbuildSrc.skipTests=true \
 	:bjca-footstone-bpring-security-dependencies:publishMavenJavaPublicationToLocalRepository \
 	:bjca-footstone-bpring-security-bom:publishMavenJavaPublicationToLocalRepository \
@@ -119,5 +129,17 @@ OpenSAML 4 absence assertion: passed
 Bouncy Castle AES-GCM round trip: passed
 LDAP, OpenID, and Xerces class loading: passed
 EOF
+
+for evidence in \
+	source-state.txt \
+	java8-runtime.txt \
+	maven-dependency-tree.txt \
+	gradle-runtime-classpath.txt \
+	smoke-results.txt \
+	disposition.txt \
+	candidate-sha256.txt; do
+	test -s "${evidence_dir}/${evidence}"
+	echo "${evidence}"
+done > "${evidence_dir}/evidence-index.txt"
 
 echo "Published Maven/Gradle consumers and Java 8 smoke tests passed"
