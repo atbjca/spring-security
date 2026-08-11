@@ -15,4 +15,4 @@
 
 - [x] 3.1 Verify every documented local CVE commit exists in Git history
 - [x] 3.2 Review the documentation and script diff for stale placeholders or expanded governance scope
-- [ ] 3.3 Run strict OpenSpec validation and archive the change
+- [x] 3.3 Run strict OpenSpec validation and archive the change
