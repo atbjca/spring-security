@@ -33,8 +33,18 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 |------|--------|--------|-----------|
 | nimbus-jose-jwt | 9.24.4 | 10.8 | CVE-2023-52428、CVE-2025-53864 |
 | oauth2-oidc-sdk | 9.43.3 | 11.33 | （随 nimbus-jose-jwt 同步升级） |
+| Bouncy Castle | 1.70 | 1.84 | CVE-2025-8916 |
 
-> 注：CVE-2025-8916 需升级 Bouncy Castle 才能修复，不在本次范围内。
+## 2026 Spring Security 安全回补
+
+当前 `patch.2-SNAPSHOT` 还包含七个适用于 Spring Security 5.8 的 2026 安全回补：
+
+- CVE-2026-22732、CVE-2026-22746
+- CVE-2026-40988、CVE-2026-41003、CVE-2026-41694
+- CVE-2026-41706、CVE-2026-47838
+
+各漏洞的官方范围、上游提交、本地提交、受影响模块和 Java 8 回归证据统一记录在
+`doc/CVE/CVE-2026-security-backports.md`。CVE-2026-22748 经官方版本范围核对，不影响 5.8 基线。
 
 ## Nexus 私服发布配置
 
@@ -54,6 +64,9 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 | `720d65f610` | 记录 CVE-2025-22234 文档（Phase 5） |
 | `087f5d59dc` | 记录 CVE-2025-22233 文档——不适用（Phase 6） |
 | `6352d81cbe` | 记录 CVE-2025-41249 文档——不适用（Phase 7） |
+| `1fe117b5ca` | 建立消费者可见的安全依赖与 Java 8 发布边界 |
+| `558f26596d` | 将维护分支推进到 `5.8.16-nes.patch.2-SNAPSHOT` |
+| `9c5e51ee66` | 完成并归档 patch.2 SNAPSHOT 准备变更 |
 
 ## 文档清单
 
@@ -72,10 +85,12 @@ Spring Security 5.8.16 维护分支——CVE 漏洞修复（CVE-2025-22228、CVE
 | `doc/CVE/CVE-2024-22258.md` | Spring Authorization Server PKCE 降级攻击——不适用 |
 | `doc/CVE/CVE-2024-38827.md` | Locale 大小写转换授权绕过——已在基线修复 |
 | `doc/CVE/CVE-2024-38821.md` | WebFlux 静态资源授权绕过——已在基线修复 |
+| `doc/CVE/CVE-2025-8916.md` | Bouncy Castle 证书名称约束 DoS——已通过 1.84 修复 |
+| `doc/CVE/CVE-2026-security-backports.md` | 七个 2026 Spring Security 回补及 Java 8 验证证据 |
 
 ---
 
-## GAV 重构——SCA 规避坐标重命名（未提交）
+## GAV 重构——SCA 规避坐标重命名（已完成）
 
 > 以下记录本次 GAV 重构的全部修改，共涉及 **36 个文件**，**341 行新增 / 363 行删除**。
 

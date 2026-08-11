@@ -26,7 +26,7 @@
 |----------|---------|---------|----------|---------|-----------|
 | CVE-2023-52428 | nimbus-jose-jwt | PBKDF2 拒绝服务（DoS） | 7.5 (High) | >= 9.37.2 | 已修复（升级至 10.8） |
 | CVE-2025-53864 | nimbus-jose-jwt | JSON 递归拒绝服务（DoS） | 5.8 (Medium) | >= 10.0.2 或 >= 9.37.4 | 已修复（升级至 10.8） |
-| CVE-2025-8916 | Bouncy Castle (传递依赖) | 证书名称约束 DoS | 6.3 (Moderate) | >= 1.79 | **未修复**（当前 BC 1.70，需后续单独处理） |
+| CVE-2025-8916 | Bouncy Castle (独立依赖基线) | 证书名称约束 DoS | 6.3 (Moderate) | >= 1.79 | 已修复（统一升级至 1.84） |
 
 各 CVE 的详细文档请参见 `doc/CVE/` 目录下的独立文件。
 
@@ -117,13 +117,13 @@ make build-thin
 
 ## 6. 已知风险与后续关注项
 
-### 6.1 Bouncy Castle 版本偏低（CVE-2025-8916 未修复）
+### 6.1 Bouncy Castle 已升级（CVE-2025-8916 已修复）
 
-### 6.1 Bouncy Castle 版本已升级（CVE-2025-8916 已修复）
+本项目最初将 Bouncy Castle 从 1.70 升级到修复版本 1.79，之后将发布依赖基线继续提升并统一为
+1.84。Maven/Gradle Java 8 消费门禁已经验证发布元数据只解析 1.84 `jdk18on` 构件，且完成
+Bouncy Castle AES-GCM 往返测试。详情见 `doc/CVE/CVE-2025-8916.md` 和
+`openspec/specs/bouncycastle-upgrade/spec.md`。
 
-本项目已将 Bouncy Castle 从 1.70 升级到 1.79（CVE-2025-8916 修复版本），升级变更在
-`upgrade-bouncycastle-for-cve-2025-8916` 变更中执行，详情见 `doc/CVE/CVE-2025-8916.md`。
-`crypto` / `saml2` / `oauth2-jose` 的回归兼容性由人工在可跑 Gradle 的主机上验证。
 ### 6.2 nimbus-jose-jwt 旧 API 已弃用但仍可用
 
 以下类在 nimbus-jose-jwt 10.8 中仍然存在（可能已标记为 `@Deprecated`），但未来版本可能移除：

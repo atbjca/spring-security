@@ -47,6 +47,24 @@
 | `make stop` | 停止所有 Gradle Daemon 进程，释放内存和文件锁 |
 | `make projects` | 查看所有子项目列表 |
 
+## 最近一次 SNAPSHOT 发布记录
+
+2026-08-11，维护分支从提交 `9c5e51ee66` 执行 `make clean deploy`，将
+`5.8.16-nes.patch.2-SNAPSHOT` 发布到配置的 Nexus snapshot 仓库。
+
+发布前门禁结果：
+
+- Maven consumer on Java 8：通过
+- Gradle consumer on Java 8：通过
+- OpenSAML 3 初始化：通过
+- OpenSAML 4 主构件缺失断言：通过
+- Bouncy Castle AES-GCM 往返：通过
+- LDAP、OpenID 和 Xerces 类加载：通过
+- `publishAllPublicationsToNexusRepository`：`BUILD SUCCESSFUL`
+
+本记录证明 Gradle 发布任务成功完成。正式的 `5.8.16-nes.patch.2` RELEASE 仍需独立 release
+change、RELEASE 坐标缺失检查、远端构件下载校验和 Git 标签；不得将本次 SNAPSHOT 上传视为正式发布。
+
 ## Nexus 属性配置要求
 
 需要在 `~/.gradle/gradle.properties` 中配置以下属性：
