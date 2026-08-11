@@ -1,4 +1,4 @@
-.PHONY: clean build build-thin install deploy stop projects help setup-gradle
+.PHONY: clean build build-thin install deploy verify-published-security stop projects help setup-gradle
 
 # 初始化 sdkman 并切换到 Java 11（buildSrc 需要 Java 11+）
 # 主项目代码仍通过 Gradle Toolchain 使用 Java 8 编译
@@ -17,6 +17,7 @@ help:
 	@echo "  make clean      - 清理构建产物"
 	@echo "  make build-thin - 快速构建（跳过测试、文档、代码检查）"
 	@echo "  make install    - 发布到本地 Maven 仓库（~/.m2/repository），跳过测试"
+	@echo "  make verify-published-security - 验证发布元数据和真实 Java 8 消费"
 	@echo "  make deploy     - 发布到 Nexus 私服，跳过测试"
 	@echo "  make stop       - 停止所有 Gradle Daemon"
 	@echo "  make projects   - 查看所有子项目"
@@ -48,7 +49,12 @@ install:
 # 发布到 Nexus 私服（根据版本号自动选择 snapshot 或 release 仓库）
 # 使用 publishAllPublicationsToNexusRepository 精确指定 Nexus 仓库，避免发布到 OSSRH 等其他仓库
 deploy:
-	$(JAVA_INIT) ./gradlew clean publishAllPublicationsToNexusRepository -x test
+	$(JAVA_INIT) ./gradlew clean
+	$(MAKE) verify-published-security
+	$(JAVA_INIT) ./gradlew publishAllPublicationsToNexusRepository -x test
+
+verify-published-security:
+	$(JAVA_INIT) ./scripts/verify-published-security.sh
 
 # 停止所有 Gradle Daemon 进程，释放内存和文件锁
 stop:

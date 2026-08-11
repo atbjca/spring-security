@@ -74,6 +74,16 @@ public class LdapAuthenticationProviderTests {
 	}
 
 	@Test
+	public void testEmptyOrNullPasswordThrowsException() {
+		LdapAuthenticationProvider ldapProvider = new LdapAuthenticationProvider(new MockAuthenticator(),
+				new MockAuthoritiesPopulator());
+		assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(
+				() -> ldapProvider.authenticate(UsernamePasswordAuthenticationToken.unauthenticated("bob", null)));
+		assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(
+				() -> ldapProvider.authenticate(UsernamePasswordAuthenticationToken.unauthenticated("bob", "")));
+	}
+
+	@Test
 	public void usernameNotFoundExceptionIsHiddenByDefault() {
 		final LdapAuthenticator authenticator = mock(LdapAuthenticator.class);
 		final UsernamePasswordAuthenticationToken joe = UsernamePasswordAuthenticationToken.unauthenticated("joe",

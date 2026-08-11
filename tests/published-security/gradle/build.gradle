@@ -1,0 +1,72 @@
+plugins {
+	id 'application'
+}
+
+group = 'security.consumer'
+version = '1.0.0'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+def candidateRepository = providers.gradleProperty('candidateRepository').get()
+
+repositories {
+	maven {
+		url = uri(candidateRepository)
+		content {
+			includeGroup('cn.bjca.footstone.bpring.security')
+		}
+	}
+	mavenLocal()
+	maven {
+		url = uri('http://192.168.131.36:8088/repository/maven-public/')
+		allowInsecureProtocol = true
+	}
+	mavenCentral()
+	maven { url = uri('https://build.shibboleth.net/nexus/content/repositories/releases/') }
+}
+
+def securityVersion = '5.8.16-nes.patch.1'
+
+dependencies {
+	implementation platform("cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-dependencies:${securityVersion}")
+	implementation platform("cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-bom:${securityVersion}")
+	implementation 'cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-saml2-service-provider'
+	implementation 'cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-crypto'
+	implementation 'cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-ldap'
+	implementation 'cn.bjca.footstone.bpring.security:bjca-footstone-bpring-security-openid'
+}
+
+sourceSets.main.java.srcDir('../maven/src/main/java')
+
+application {
+	mainClass = 'security.consumer.PublishedSecuritySmoke'
+}
+
+tasks.register('verifySecurityGraph') {
+	doLast {
+		def artifacts = configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts
+		def versions = artifacts.collectEntries { artifact ->
+			["${artifact.moduleVersion.id.group}:${artifact.name}".toString(), artifact.moduleVersion.id.version]
+		}
+		def evidenceDir = file("${buildDir}/security-evidence")
+		evidenceDir.mkdirs()
+		file("${evidenceDir}/runtime-classpath.txt").text = artifacts.collect {
+			"${it.moduleVersion.id.group}:${it.name}:${it.moduleVersion.id.version}"
+		}.sort().join(System.lineSeparator()) + System.lineSeparator()
+		assert versions['org.bouncycastle:bcpkix-jdk18on'] == '1.84'
+		assert versions['org.bouncycastle:bcprov-jdk18on'] == '1.84'
+		assert versions['commons-collections:commons-collections'] == '3.2.2'
+		assert versions['com.google.guava:guava'] == '32.0.1-jre'
+		assert versions['org.apache.santuario:xmlsec'] == '2.2.6'
+		assert versions['com.fasterxml.woodstox:woodstox-core'] == '5.4.0'
+		assert versions['xerces:xercesImpl'] == '2.12.2'
+		assert !artifacts.any { it.name.contains('jdk15on') }
+		assert !versions.containsKey('org.apache.velocity:velocity')
+		assert !versions.containsKey('commons-lang:commons-lang')
+	}
+}
+
+tasks.named('check') {
+	dependsOn(tasks.named('verifySecurityGraph'))
+}

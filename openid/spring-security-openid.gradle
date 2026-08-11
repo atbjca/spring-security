@@ -28,6 +28,7 @@ dependencies {
 	provided 'jakarta.servlet:jakarta.servlet-api'
 
 	runtimeOnly 'net.sourceforge.nekohtml:nekohtml'
+	runtimeOnly libs.xerces.xerces.impl
 	runtimeOnly('org.apache.httpcomponents:httpclient') {
 		exclude group: 'commons-logging', module: 'commons-logging'
 	}

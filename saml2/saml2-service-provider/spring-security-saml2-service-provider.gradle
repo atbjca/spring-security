@@ -1,3 +1,9 @@
+import java.util.zip.ZipFile
+
+import org.gradle.api.GradleException
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
+import org.gradle.api.tasks.bundling.Jar
+
 apply plugin: 'io.spring.convention.spring-module'
 apply plugin: 'nebula.facet'
 
@@ -52,9 +58,30 @@ compileOpensaml4TestJava {
 dependencies {
 	management platform(project(":bjca-footstone-bpring-security-dependencies"))
 	api project(':bjca-footstone-bpring-security-web')
-	api "org.opensaml:opensaml-core"
-	api "org.opensaml:opensaml-saml-api"
-	api "org.opensaml:opensaml-saml-impl"
+	api("org.opensaml:opensaml-core") {
+		exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+		exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
+		exclude group: 'org.apache.velocity', module: 'velocity'
+		exclude group: 'commons-lang', module: 'commons-lang'
+	}
+	api("org.opensaml:opensaml-saml-api") {
+		exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+		exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
+		exclude group: 'org.apache.velocity', module: 'velocity'
+		exclude group: 'commons-lang', module: 'commons-lang'
+	}
+	api("org.opensaml:opensaml-saml-impl") {
+		exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+		exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
+		exclude group: 'org.apache.velocity', module: 'velocity'
+		exclude group: 'commons-lang', module: 'commons-lang'
+	}
+	runtimeOnly libs.commons.collections
+	runtimeOnly libs.com.google.guava.guava
+	runtimeOnly libs.org.apache.santuario.xmlsec
+	runtimeOnly libs.com.fasterxml.woodstox.woodstox.core
+	runtimeOnly libs.org.bouncycastle.bcpkix.jdk18on
+	runtimeOnly libs.org.bouncycastle.bcprov.jdk18on
 	opensaml4MainImplementation libs.org.opensaml4.opensaml.core
 	opensaml4MainImplementation libs.org.opensaml4.opensaml.saml.api
 	opensaml4MainImplementation libs.org.opensaml4.opensaml.saml.impl
@@ -75,29 +102,52 @@ dependencies {
 	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
 }
 
-project.tasks.matching { t -> t.name == "jar"}.configureEach {
+project.tasks.matching { t -> t.name == "jar" }.configureEach {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	from {
-		compileOpensaml3MainJava
-	}
-	from {
-		compileOpensaml4MainJava
-	}
+	from sourceSets.opensaml3Main.output
 }
 
-project.tasks.matching { t -> t.name == "sourcesJar"}.configureEach {
-	from {
-		sourceSets.opensaml3Main.allSource
-	}
-	from {
-		sourceSets.opensaml4Main.allSource
-	}
+project.tasks.matching { t -> t.name == "sourcesJar" }.configureEach {
+	from sourceSets.opensaml3Main.allSource
 }
-
 
 javadoc {
-	classpath += sourceSets.opensaml3Main.runtimeClasspath + sourceSets.opensaml4Main.runtimeClasspath
-	source += sourceSets.opensaml3Main.allJava + sourceSets.opensaml4Main.allJava
+	classpath += sourceSets.opensaml3Main.runtimeClasspath
+	source += sourceSets.opensaml3Main.allJava
+}
+
+def samlJar = tasks.named('jar', Jar)
+
+def checkJava8SamlArtifact = tasks.register('checkJava8SamlArtifact') {
+	group = 'verification'
+	description = 'Checks that the Java 8 SAML publication contains no OpenSAML 4 implementation classes'
+	dependsOn(samlJar)
+	inputs.file(samlJar.flatMap { it.archiveFile })
+	doLast {
+		File artifact = samlJar.get().archiveFile.get().asFile
+		List<String> violations
+		new ZipFile(artifact).withCloseable { zip ->
+			violations = zip.entries().findAll {
+				!it.directory && it.name.endsWith('.class') && it.name.contains('/OpenSaml4')
+			}.collect { "${it.name}: OpenSAML 4 class is not allowed in the Java 8 artifact" }
+		}
+		if (!violations.isEmpty()) {
+			throw new GradleException("Java 8 SAML artifact verification failed for ${artifact}:\n"
+					+ violations.collect { " - ${it}" }.join('\n'))
+		}
+	}
+}
+
+tasks.named('check') {
+	dependsOn(checkJava8SamlArtifact)
+}
+
+tasks.withType(AbstractPublishToMaven).configureEach {
+	dependsOn(checkJava8SamlArtifact)
+}
+
+tasks.matching { it.name == 'artifactoryPublish' }.configureEach {
+	dependsOn(checkJava8SamlArtifact)
 }
 
 opensaml3Test {

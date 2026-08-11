@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>security.consumer</groupId>
+	<artifactId>published-security-maven-smoke</artifactId>
+	<version>1.0.0</version>
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.security.version>5.8.16-nes.patch.1</spring.security.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>candidate</id>
+			<url>${candidateRepository}</url>
+		</repository>
+		<repository>
+			<id>maven-local</id>
+			<url>file://${user.home}/.m2/repository</url>
+		</repository>
+		<repository>
+			<id>nexus-public</id>
+			<url>http://192.168.131.36:8088/repository/maven-public/</url>
+		</repository>
+		<repository>
+			<id>shibboleth</id>
+			<url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+		</repository>
+	</repositories>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>cn.bjca.footstone.bpring.security</groupId>
+				<artifactId>bjca-footstone-bpring-security-dependencies</artifactId>
+				<version>${spring.security.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>cn.bjca.footstone.bpring.security</groupId>
+				<artifactId>bjca-footstone-bpring-security-bom</artifactId>
+				<version>${spring.security.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>cn.bjca.footstone.bpring.security</groupId>
+			<artifactId>bjca-footstone-bpring-security-saml2-service-provider</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.bjca.footstone.bpring.security</groupId>
+			<artifactId>bjca-footstone-bpring-security-crypto</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.bjca.footstone.bpring.security</groupId>
+			<artifactId>bjca-footstone-bpring-security-ldap</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.bjca.footstone.bpring.security</groupId>
+			<artifactId>bjca-footstone-bpring-security-openid</artifactId>
+		</dependency>
+	</dependencies>
+</project>

@@ -10,6 +10,9 @@ public class JavadocOptionsPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getTasks().withType(Javadoc).all { t->
 			t.options.addStringOption('Xdoclint:none', '-quiet')
+			t.options.encoding = 'UTF-8'
+			t.options.charSet = 'UTF-8'
+			t.options.docEncoding = 'UTF-8'
 		}
 	}
 }

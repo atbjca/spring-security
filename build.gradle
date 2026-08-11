@@ -198,11 +198,12 @@ subprojects {
 		resolutionStrategy.eachDependency { details ->
 			def req = details.requested
 			if (req.group == 'org.bouncycastle') {
-				// BC 1.79 只发布 jdk18on 变体，将所有 jdk15on 请求替换为 jdk18on
+				// BC 1.84 only publishes the jdk18on line; map legacy requests as a
+				// repository self-check. Published metadata must carry the same graph.
 				if (req.name.contains('jdk15on')) {
-					details.useTarget group: req.group, name: req.name.replace('jdk15on', 'jdk18on'), version: '1.79'
+					details.useTarget group: req.group, name: req.name.replace('jdk15on', 'jdk18on'), version: '1.84'
 				} else {
-					details.useVersion '1.79'
+					details.useVersion '1.84'
 				}
 			}
 		}

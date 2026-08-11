@@ -1,9 +1,16 @@
+import org.gradle.api.publish.maven.MavenPublication
+
 apply plugin: 'io.spring.convention.spring-module'
 
 dependencies {
 	management platform(project(":bjca-footstone-bpring-security-dependencies"))
 	optional 'cn.bjca.footstone.bpring:bjca-footstone-bpring-jcl'
 	optional 'org.bouncycastle:bcpkix-jdk18on'
+
+	constraints {
+		api libs.org.bouncycastle.bcpkix.jdk18on
+		api libs.org.bouncycastle.bcprov.jdk18on
+	}
 	
 	testImplementation "org.assertj:assertj-core"
 	testImplementation "org.junit.jupiter:junit-jupiter-api"
@@ -13,4 +20,24 @@ dependencies {
 	testImplementation "org.mockito:mockito-junit-jupiter"
 	testImplementation "org.mockito:mockito-inline"
 	testImplementation "cn.bjca.footstone.bpring:bjca-footstone-bpring-test"
+}
+
+// PropDeps keeps optional dependencies off the standard Gradle component. Keep
+// the two BC coordinates explicit in the Maven publication so consumers can
+// opt in without inheriting a legacy version.
+publishing {
+	publications.withType(MavenPublication).configureEach {
+		pom.withXml {
+			def pomNode = asNode()
+			def dependenciesNode = pomNode.dependencies ?: pomNode.appendNode('dependencies')
+			[['bcpkix-jdk18on', '1.84'], ['bcprov-jdk18on', '1.84']].each { coordinate ->
+				def dependencyNode = dependenciesNode.appendNode('dependency')
+				dependencyNode.appendNode('groupId', 'org.bouncycastle')
+				dependencyNode.appendNode('artifactId', coordinate[0])
+				dependencyNode.appendNode('version', coordinate[1])
+				dependencyNode.appendNode('scope', 'compile')
+				dependencyNode.appendNode('optional', 'true')
+			}
+		}
+	}
 }

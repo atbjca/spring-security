@@ -1,6 +1,4 @@
-plugins {
-	id 'java-platform'
-}
+apply plugin: 'io.spring.convention.bom'
 
 javaPlatform {
 	allowDependencies()
@@ -26,7 +24,6 @@ dependencies {
 	api platform(libs.org.jetbrains.kotlinx.kotlinx.coroutines.bom)
 	api platform(libs.com.fasterxml.jackson.jackson.bom)
 	constraints {
-		api libs.ch.qos.logback.logback.classic
 		api libs.com.google.inject.guice
 		api libs.com.nimbusds.nimbus.jose.jwt
 		api libs.com.nimbusds.oauth2.oidc.sdk
@@ -34,6 +31,7 @@ dependencies {
 		api libs.com.squareup.okhttp3.okhttp
 		api libs.com.unboundid.unboundid.ldapsdk
 		api libs.commons.collections
+		api libs.com.google.guava.guava
 		api libs.io.mockk
 		api libs.io.projectreactor.tools.blockhound
 		api libs.jakarta.inject.jakarta.inject.api
@@ -59,6 +57,9 @@ dependencies {
 		api libs.org.assertj.assertj.core
 		api libs.org.bouncycastle.bcpkix.jdk18on
 		api libs.org.bouncycastle.bcprov.jdk18on
+		api libs.org.apache.santuario.xmlsec
+		api libs.com.fasterxml.woodstox.woodstox.core
+		api libs.xerces.xerces.impl
 		api libs.org.eclipse.jetty.jetty.server
 		api libs.org.eclipse.jetty.jetty.servlet
 		api libs.org.eclipse.persistence.javax.persistence

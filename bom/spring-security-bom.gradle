@@ -4,6 +4,13 @@ apply plugin: 'io.spring.convention.bom'
 
 dependencies {
 	constraints {
+		api libs.com.google.guava.guava
+		api libs.commons.collections
+		api libs.org.apache.santuario.xmlsec
+		api libs.com.fasterxml.woodstox.woodstox.core
+		api libs.xerces.xerces.impl
+		api libs.org.bouncycastle.bcpkix.jdk18on
+		api libs.org.bouncycastle.bcprov.jdk18on
 		project.rootProject.allprojects { p ->
 			p.plugins.withType(SpringModulePlugin) {
 				api p
