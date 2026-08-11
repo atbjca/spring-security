@@ -31,4 +31,4 @@
 - [x] 5.1 Run relevant Crypto and SAML/OpenSAML 3 regression tests
 - [x] 5.2 Run relevant LDAP empty-password and OAuth2 JOSE BC regression tests
 - [x] 5.3 Review generated POM/module metadata and the full source diff for accidental coordinate or API changes
-- [ ] 5.4 Run strict OpenSpec validation and archive the completed change
+- [x] 5.4 Run strict OpenSpec validation and archive the completed change
